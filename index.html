@@ -1245,12 +1245,6 @@ body.dark select.form-control {
     max-width: 100%;
     gap: 8px;
   }
-  #admin-stats-grid .stat-card:nth-child(1) { order: 1; }
-  #admin-stats-grid .stat-card:nth-child(2) { order: 2; }
-  #admin-stats-grid .stat-card:nth-child(3) { order: 3; }
-  #admin-stats-grid .stat-card:nth-child(4) { order: 4; }
-  #admin-stats-grid .stat-card:nth-child(5) { order: 5; }
-  #admin-stats-grid .stat-card:nth-child(6) { order: 6; }
   .stat-card { aspect-ratio: 1 / 1.1; max-height: 130px; }
   #admin-extra-grid { grid-template-columns: 1fr 1fr; max-width: 100%; }
 }
@@ -1975,9 +1969,15 @@ async function loadAdminDashboard() {
   const totalAssocValue = state.allAssocs.reduce((s,a)=>s+(parseFloat(a.sharesCount||0)*parseFloat(a.shareValue||0)*parseInt(a.duration||1)),0);
   // تنسيق مختصر للأرقام الكبيرة
   function fmtShort(n) {
-    if (n >= 1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'') + 'م';
-    if (n >= 1000)    return (n/1000).toFixed(0) + 'ك';
-    return String(n);
+    if (n >= 1000000) {
+      const v = n / 1000000;
+      return (v === Math.floor(v) ? Math.floor(v) : v.toFixed(1)) + ' مليون';
+    }
+    if (n >= 1000) {
+      const v = n / 1000;
+      return (v === Math.floor(v) ? Math.floor(v) : v.toFixed(0)) + ' ألف';
+    }
+    return Number(n).toLocaleString('ar');
   }
 
   document.getElementById('admin-stats-grid').innerHTML = `
@@ -2003,7 +2003,7 @@ async function loadAdminDashboard() {
     </div>
     <div class="stat-card" style="background:linear-gradient(145deg,#1a1a2e,#16213e)!important;color:#fff!important;box-shadow:0 6px 24px rgba(0,0,0,0.3)">
       <div class="stat-icon" style="background:rgba(255,255,255,0.12)">💰</div>
-      <div class="stat-val" style="font-size:clamp(11px,1.5vw,17px)">${fmtShort(totalAssocValue)} ﷼</div>
+      <div class="stat-val" style="font-size:clamp(11px,1.6vw,16px);white-space:nowrap;overflow:hidden;text-overflow:clip">${fmtShort(totalAssocValue)} ﷼</div>
       <div class="stat-label">إجمالي ﷼</div>
     </div>
     <div class="stat-card" style="background:linear-gradient(145deg,#1f2937,#374151)!important;color:#fff!important;box-shadow:0 6px 24px rgba(0,0,0,0.3)" id="online-stat-card">
