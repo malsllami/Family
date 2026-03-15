@@ -281,13 +281,13 @@ body.dark .header { background: #0d1829; }
 /* ═══════════════════ STAT CARDS ═══════════════════ */
 #admin-stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-bottom: 6px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
 }
 .stat-card {
-  border-radius: 36px;
-  padding: 22px 18px 18px;
+  border-radius: 22px;
+  padding: 14px 14px 12px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -308,27 +308,26 @@ body.dark .header { background: #0d1829; }
   background: rgba(255,255,255,0.06);
 }
 .stat-icon {
-  width: 48px; height: 48px;
-  border-radius: 14px;
+  width: 36px; height: 36px;
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-size: 17px;
   flex-shrink: 0;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   background: rgba(255,255,255,0.18);
-  backdrop-filter: blur(8px);
 }
 .stat-val {
   font-family: 'Sora', sans-serif;
-  font-size: 34px;
+  font-size: 26px;
   font-weight: 800;
   color: #fff !important;
   line-height: 1;
   letter-spacing: -1px;
 }
 .stat-label {
-  font-size: 12px;
-  color: rgba(255,255,255,0.75) !important;
-  margin-top: 6px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.72) !important;
+  margin-top: 5px;
   font-weight: 500;
 }
 .stat-card.blue { background: linear-gradient(145deg, #1e3a8a, #3b5bdb) !important; color: #fff !important; box-shadow: 0 8px 32px rgba(59,91,219,0.35); }
@@ -1197,6 +1196,39 @@ select.form-control {
 body.dark select.form-control {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394aacf' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
 }
+
+/* ── Wide stat cards (عداد + متواجدون) ── */
+.stat-card-wide {
+  border-radius: 22px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+.stat-card-wide:hover { transform: translateY(-2px); }
+.stat-card-wide::before {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: -20px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.stat-card-wide.teal  { background: linear-gradient(145deg,#0f4c75,#1282a2); box-shadow:0 6px 24px rgba(18,130,162,0.3); }
+.stat-card-wide.rose  { background: linear-gradient(145deg,#831843,#be185d); box-shadow:0 6px 24px rgba(190,24,93,0.3); }
+.countdown-segments { display:flex; gap:6px; align-items:center; }
+.countdown-seg { text-align:center; background:rgba(255,255,255,0.15); border-radius:10px; padding:4px 8px; min-width:38px; }
+.countdown-seg-val { font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#fff; line-height:1; }
+.countdown-seg-lbl { font-size:9px; color:rgba(255,255,255,0.65); margin-top:2px; }
+.countdown-sep { font-size:18px; font-weight:800; color:rgba(255,255,255,0.5); margin-top:-4px; }
+.online-dots { display:flex; gap:3px; flex-wrap:wrap; margin-top:4px; }
+.online-dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.5); }
+.online-dot.active { background:#4ade80; box-shadow:0 0 6px #4ade80; animation:pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.5} }
 </style>
 </head>
 <body>
@@ -1318,7 +1350,8 @@ body.dark select.form-control {
   <!-- ===== ADMIN DASHBOARD ===== -->
   <div id="page-admin" class="page">
     <div class="container section">
-      <div id="admin-stats-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:4px"></div>
+      <div id="admin-stats-grid"></div>
+      <div id="admin-extra-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px"></div>
       
       <!-- Management Tabs -->
       <div class="tabs" style="margin-top:8px">
@@ -1917,24 +1950,92 @@ async function loadAdminDashboard() {
     <div class="stat-card blue">
       <div class="stat-icon blue">👥</div>
       <div class="stat-val">${state.allMembers.length}</div>
-      <div class="stat-label">إجمالي الأعضاء</div>
+      <div class="stat-label">الأعضاء</div>
     </div>
     <div class="stat-card gold">
       <div class="stat-icon gold">🏛️</div>
       <div class="stat-val">${state.allAssocs.length}</div>
-      <div class="stat-label">إجمالي الجمعيات</div>
+      <div class="stat-label">الجمعيات</div>
     </div>
     <div class="stat-card green">
       <div class="stat-icon green">✅</div>
       <div class="stat-val">${activeAssocs}</div>
-      <div class="stat-label">الجمعيات النشطة</div>
+      <div class="stat-label">النشطة</div>
     </div>
     <div class="stat-card purple">
       <div class="stat-icon purple">📋</div>
       <div class="stat-val">${state.allSubs.length}</div>
-      <div class="stat-label">إجمالي الاشتراكات</div>
+      <div class="stat-label">الاشتراكات</div>
+    </div>
+    <div class="stat-card" style="background:linear-gradient(145deg,#1a1a2e,#16213e)!important;color:#fff!important;box-shadow:0 6px 24px rgba(0,0,0,0.3)">
+      <div class="stat-icon" style="background:rgba(255,255,255,0.12)">💰</div>
+      <div class="stat-val">${Number(state.allAssocs.reduce((s,a)=>s+(parseFloat(a.sharesCount||0)*parseFloat(a.shareValue||0)*parseInt(a.duration||1)),0)).toLocaleString('ar')}</div>
+      <div class="stat-label">إجمالي الجمعيات ﷼</div>
+    </div>
+    <div class="stat-card" style="background:linear-gradient(145deg,#1f2937,#374151)!important;color:#fff!important;box-shadow:0 6px 24px rgba(0,0,0,0.3)" id="online-stat-card">
+      <div class="stat-icon" style="background:rgba(255,255,255,0.12)">🟢</div>
+      <div class="stat-val" id="online-count">1</div>
+      <div class="stat-label">متواجد الآن</div>
     </div>
   `;
+
+  // ── بطاقة العداد العكسي ──
+  const firstActiveAssoc = state.allAssocs.find(a => a.status === 'نشطة') || state.allAssocs[0];
+  let countdownHTML = '';
+  let onlineHTML = '';
+
+  if (firstActiveAssoc && firstActiveAssoc.endDate) {
+    const endDate  = new Date(firstActiveAssoc.endDate);
+    const nowDate  = new Date();
+    const diffMs   = Math.max(0, endDate - nowDate);
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffHrs  = Math.floor((diffMs % 86400000) / 3600000);
+    const diffMins = Math.floor((diffMs % 3600000) / 60000);
+    const pct      = Math.min(100, Math.round((nowDate - new Date(firstActiveAssoc.startDate)) / (endDate - new Date(firstActiveAssoc.startDate)) * 100));
+    countdownHTML = '<div class="stat-card-wide teal">'
+      + '<div style="font-size:28px;flex-shrink:0">⏳</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:11px;color:rgba(255,255,255,0.65);margin-bottom:6px;font-weight:600">' + firstActiveAssoc.name + ' — الوقت المتبقي</div>'
+      + '<div class="countdown-segments">'
+      + '<div class="countdown-seg"><div class="countdown-seg-val">' + diffDays + '</div><div class="countdown-seg-lbl">يوم</div></div>'
+      + '<div class="countdown-sep">:</div>'
+      + '<div class="countdown-seg"><div class="countdown-seg-val">' + String(diffHrs).padStart(2,'0') + '</div><div class="countdown-seg-lbl">ساعة</div></div>'
+      + '<div class="countdown-sep">:</div>'
+      + '<div class="countdown-seg"><div class="countdown-seg-val">' + String(diffMins).padStart(2,'0') + '</div><div class="countdown-seg-lbl">دقيقة</div></div>'
+      + '</div>'
+      + '<div style="margin-top:8px;height:4px;background:rgba(255,255,255,0.15);border-radius:999px;overflow:hidden">'
+      + '<div style="height:100%;width:' + pct + '%;background:rgba(255,255,255,0.7);border-radius:999px"></div></div>'
+      + '<div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px">' + pct + '% مكتمل</div>'
+      + '</div></div>';
+  }
+
+  // ── بطاقة المتواجدين ──
+  try {
+    const sessionKey = 'active_user_' + (state.user ? state.user.id : 'guest');
+    sessionStorage.setItem(sessionKey, Date.now());
+    let onlineCount = 0;
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const k = sessionStorage.key(i);
+      if (k && k.startsWith('active_user_')) {
+        const t = parseInt(sessionStorage.getItem(k));
+        if (Date.now() - t < 300000) onlineCount++;
+      }
+    }
+    onlineCount = Math.max(1, onlineCount);
+    const dots = Array.from({length: Math.min(10, state.allMembers.length)}, function(_,i) {
+      return '<div class="online-dot' + (i < onlineCount ? ' active' : '') + '"></div>';
+    }).join('');
+    onlineHTML = '<div class="stat-card-wide rose">'
+      + '<div style="font-size:28px;flex-shrink:0">👥</div>'
+      + '<div style="flex:1">'
+      + '<div style="font-size:11px;color:rgba(255,255,255,0.65);font-weight:600;margin-bottom:4px">المتواجدون الآن</div>'
+      + '<div style="font-family:Sora,sans-serif;font-size:26px;font-weight:800;color:#fff;line-height:1">' + onlineCount + ' <span style="font-size:13px;opacity:0.6">/ ' + state.allMembers.length + '</span></div>'
+      + '<div class="online-dots" style="margin-top:6px">' + dots + '</div>'
+      + '</div></div>';
+  } catch(e) {}
+
+  const extraGrid = document.getElementById('admin-extra-grid');
+  if (extraGrid) extraGrid.innerHTML = countdownHTML + onlineHTML;
   
   renderMembersTable();
   renderAdminAssocs();
