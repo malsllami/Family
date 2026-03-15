@@ -284,6 +284,10 @@ body.dark .header { background: #0d1829; }
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(6px, 0.8vw, 10px);
   margin-bottom: clamp(6px, 0.8vw, 10px);
+  max-width: 600px;
+}
+#admin-extra-grid {
+  max-width: 600px;
 }
 .stat-card {
   border-radius: clamp(14px, 2vw, 22px);
@@ -294,6 +298,7 @@ body.dark .header { background: #0d1829; }
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.12);
   aspect-ratio: 1 / 0.9;
+  max-height: 140px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: default;
 }
@@ -1155,7 +1160,8 @@ body.dark .mpc-stat-val { color:#748ffc; }
   .mpc-body   { padding: 0 14px 18px; }
   .mpc-stats  { gap: 8px; }
   .mpc-stat-val { font-size: 18px; }
-  #admin-stats-grid { gap: 10px; }
+  #admin-stats-grid { gap: 8px; max-width: 100%; }
+  #admin-extra-grid  { max-width: 100%; }
   .stat-val { font-size: 28px !important; }
   input, select, textarea { font-size: 15px !important; }
 }
@@ -1218,6 +1224,8 @@ body.dark select.form-control {
 .stat-card-wide:hover { transform: translateY(-2px); }
 .stat-card-wide.teal  { background: linear-gradient(145deg,#0f4c75,#1282a2); box-shadow:0 4px 20px rgba(18,130,162,0.3); }
 .stat-card-wide.rose  { background: linear-gradient(145deg,#831843,#be185d); box-shadow:0 4px 20px rgba(190,24,93,0.3); }
+/* delivery card max width */
+#admin-extra-grid > div[style*="grid-column"] { max-width: 600px; }
 .countdown-segments { display:flex; gap:clamp(3px,0.5vw,6px); align-items:center; flex-wrap:wrap; }
 .countdown-seg { text-align:center; background:rgba(255,255,255,0.15); border-radius:clamp(6px,1vw,10px); padding:clamp(2px,0.4vw,5px) clamp(4px,0.7vw,8px); min-width:clamp(28px,3.5vw,42px); }
 .countdown-seg-val { font-family:'Sora',sans-serif; font-size:clamp(11px,2vw,18px); font-weight:800; color:#fff; line-height:1; }
@@ -1229,6 +1237,23 @@ body.dark select.form-control {
 @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
 .stat-card .stat-val { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* Large screens: limit dashboard width */
+@media (min-width: 900px) {
+  #admin-stats-grid {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 100%;
+    gap: 8px;
+  }
+  .stat-card {
+    aspect-ratio: 1 / 1.1;
+    max-height: 120px;
+  }
+  #admin-extra-grid {
+    grid-template-columns: 1fr 1fr;
+    max-width: 100%;
+  }
+}
 </style>
 </head>
 <body>
@@ -1351,7 +1376,7 @@ body.dark select.form-control {
   <div id="page-admin" class="page">
     <div class="container section">
       <div id="admin-stats-grid"></div>
-      <div id="admin-extra-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"></div>
+      <div id="admin-extra-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;max-width:600px"></div>
       
       <!-- Management Tabs -->
       <div class="tabs" style="margin-top:8px">
