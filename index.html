@@ -2384,18 +2384,20 @@ async function loadMemberDashboard() {
         const deliveryVal = wishShares * shareVal * dur;
 
         return `
-        <div class="month-row-item">
-          <div class="month-row-num" style="${isNow?'background:var(--accent);':''}${isPast&&!isNow?'opacity:0.5;':''}">${m.monthNum}</div>
-          <div class="month-row-info">
-            <div class="month-row-shares">${myShares} سهم — قيمة الشهر: ${Number(monthlyVal).toLocaleString('ar')} ﷼</div>
-            <div class="month-row-date">📅 ${fmtDate(mDate.toISOString())}${mDaysLeft>0?' — بعد '+mDaysLeft+' يوم':isPast?' — مضى':' — هذا الشهر'}</div>
-            ${wishShares>0 ? `<div style="font-size:12px;color:var(--primary);margin-top:3px;font-weight:600">📤 يُستلم ${wishShares} سهم = ${Number(deliveryVal).toLocaleString('ar')} ﷼</div>` : ''}
-          </div>
-          <div class="month-row-status">
-            <span class="status-pill ${collected?'collected':'uncollected'}">
-              ${collected?'✅ حُصِّل':'⏳ لم يُحصَّل'}
-            </span>
-            ${wishShares>0 ? `<span class="status-pill delivery">${delivered?'✅ سُلِّم':'📤 بانتظار التسليم'}</span>` : ''}
+        <div class="month-row-item" style="flex-wrap:wrap;gap:8px;align-items:flex-start">
+          <div style="display:flex;align-items:center;gap:10px;width:100%">
+            <div class="month-row-num" style="${isNow?'background:linear-gradient(135deg,#f0b429,#c07c0a);':''}${isPast&&!isNow?'opacity:0.55;':''}">${m.monthNum}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;color:var(--text)">${myShares} سهم · <span style="color:var(--text-2)">${Number(monthlyVal).toLocaleString('ar')} ﷼</span></div>
+              <div style="font-size:11px;color:var(--text-3);margin-top:2px">📅 ${fmtDate(mDate.toISOString())}${mDaysLeft>0?' · بعد '+mDaysLeft+' يوم':isPast?' · مضى':' · هذا الشهر'}</div>
+              ${wishShares>0 ? `<div style="font-size:12px;color:#12b886;margin-top:3px;font-weight:700">📤 ${wishShares} سهم = ${Number(deliveryVal).toLocaleString('ar')} ﷼</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0">
+              <span class="status-pill ${collected?'collected':'uncollected'}" style="font-size:11px;white-space:nowrap">
+                ${collected?'✅ حُصِّل':'⏳ لم يُحصَّل'}
+              </span>
+              ${wishShares>0 ? `<span class="status-pill delivery" style="font-size:11px;white-space:nowrap">${delivered?'✅ سُلِّم':'📤 بانتظار'}</span>` : ''}
+            </div>
           </div>
         </div>`;
       }).join('')}
