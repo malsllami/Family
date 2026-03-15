@@ -872,7 +872,17 @@ body.dark .mpc-stat-val { color:#748ffc; }
 .month-row-item { display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid var(--border); transition:background 0.22s cubic-bezier(0.4,0,0.2,1); }
 .month-row-item:last-child { border-bottom:none; }
 .month-row-item:hover { background:var(--bg-2); }
-.month-row-num { width:36px; height:36px; border-radius:14px; background:linear-gradient(135deg,#132438,#1e3a5f); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:14px; font-weight:800; flex-shrink:0; }
+.month-row-num {
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #132438, #1e3a5f);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', sans-serif;
+  font-size: 16px; font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(8,17,30,0.2);
+}
 .month-row-info { flex:1; min-width:0; }
 .month-row-shares { font-size:13px; font-weight:600; color:var(--text); }
 .month-row-date   { font-size:11px; color:var(--text-3); margin-top:2px; }
@@ -1621,7 +1631,12 @@ function _hideLoading() {
 
 async function api(params) {
   _showLoading();
-  const url = API_URL + '?' + new URLSearchParams(params);
+  // تحويل الأرقام العربية في جميع المعاملات
+  const cleanParams = {};
+  for (const [k,v] of Object.entries(params)) {
+    cleanParams[k] = (typeof v === 'string') ? toEnglishNum(v) : v;
+  }
+  const url = API_URL + '?' + new URLSearchParams(cleanParams);
   try {
     const res = await fetch(url, {cache:'no-store'});
     const data = await res.json();
@@ -2288,30 +2303,32 @@ async function loadMemberDashboard() {
 
         <!-- أشهر الاستلام من الرغبات -->
         ${deliveryMonths.length ? `
-        <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-bottom:8px">📤 أشهر استلامي المحددة</div>
-        <div class="mpc-delivery-list">
-          ${deliveryMonths.map(w => {
+        <div class="section-title" style="font-size:14px;margin-bottom:12px">📤 أشهر استلامي المحددة</div>
+        <div class="months-table-card" style="margin-bottom:0">
+          ${deliveryMonths.map((w,wi) => {
             const mDate = new Date(a.startDate);
             mDate.setMonth(mDate.getMonth() + (parseInt(w.monthNum)-1));
-            const mDaysLeft = Math.max(0, Math.ceil((mDate - today)/86400000));
-            const mShares = parseFloat(w.sharesCount);
-            const mValue  = mShares * shareVal * dur;
-            const urgency = mDaysLeft <= 7 ? 'urgent' : mDaysLeft <= 30 ? 'soon' : '';
-            const mLabel  = mDaysLeft === 0 ? 'هذا الشهر 🔔' : mDaysLeft < 0 ? 'مضى' : `بعد ${mDaysLeft} يوم`;
-            return `
-            <div class="mpc-delivery-row">
-              <div class="mpc-delivery-month">الشهر ${w.monthNum}</div>
-              <div class="mpc-delivery-info">
-                <div class="mpc-delivery-shares">${mShares} سهم</div>
-                <div class="mpc-delivery-value">${Number(mValue).toLocaleString('ar')} ﷼</div>
-              </div>
-              <div class="mpc-delivery-countdown ${urgency}">
-                📅 ${mLabel}
-              </div>
-            </div>`;
+            const mDaysLeft  = Math.max(0, Math.ceil((mDate - today)/86400000));
+            const mShares    = parseFloat(w.sharesCount);
+            const mValue     = mShares * shareVal * dur;
+            const urgency    = mDaysLeft <= 7 ? 'urgent' : mDaysLeft <= 30 ? 'soon' : '';
+            const mLabel     = mDaysLeft === 0 ? 'هذا الشهر 🔔' : mDaysLeft < 0 ? 'مضى' : ('بعد ' + mDaysLeft + ' يوم');
+            const accentColor = urgency==='urgent' ? '#f03e3e' : urgency==='soon' ? '#f59f00' : '#3b5bdb';
+            const pillClass  = urgency==='urgent' ? 'uncollected' : urgency==='soon' ? 'delivery' : 'collected';
+            const numStyle   = 'background:linear-gradient(135deg,' + accentColor + ',' + accentColor + 'bb);min-width:46px;height:46px;font-size:16px';
+            return '<div class="month-row-item">'
+              + '<div class="month-row-num" style="' + numStyle + '">' + w.monthNum + '</div>'
+              + '<div class="month-row-info">'
+              + '<div class="month-row-shares" style="font-size:15px;font-weight:800">' + mShares + ' سهم — ' + Number(mValue).toLocaleString('ar') + ' ﷼</div>'
+              + '<div class="month-row-date">📅 ' + fmtDate(mDate.toISOString()) + '</div>'
+              + '</div>'
+              + '<div class="month-row-status">'
+              + '<span class="status-pill ' + pillClass + '" style="font-size:12px">' + mLabel + '</span>'
+              + '</div>'
+              + '</div>';
           }).join('')}
         </div>` : `
-        <div style="text-align:center;padding:12px;background:var(--bg);border-radius: var(--r-sm);font-size:13px;color:var(--text-muted)">
+        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:14px;font-size:13px;color:var(--text-muted)">
           🎯 لم تحدد أشهر الاستلام بعد —
           <button class="btn btn-outline btn-sm" onclick="viewWishes('${a.id}')">تحديد الآن</button>
         </div>`}
@@ -3635,6 +3652,29 @@ if (API_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
     sessionStorage.removeItem('session');
   }
 })();
+
+
+// ── تحويل الأرقام العربية إلى إنجليزية ──
+function toEnglishNum(str) {
+  if (!str && str !== 0) return str;
+  return String(str)
+    .replace(/[٠١٢٣٤٥٦٧٨٩]/g, d => d.charCodeAt(0) - 0x0660)
+    .replace(/[۰۱۲۳۴۵۶۷۸۹]/g, d => d.charCodeAt(0) - 0x06F0)
+    .replace(/،/g, ',')
+    .replace(/٫/g, '.');
+}
+
+// ── تطبيق التحويل على كل مربعات الإدخال الرقمية تلقائياً ──
+document.addEventListener('input', function(e) {
+  const el = e.target;
+  if (!el.matches('input[type=number], input[type=tel], input.num-input')) return;
+  const pos = el.selectionStart;
+  const converted = toEnglishNum(el.value);
+  if (converted !== el.value) {
+    el.value = converted;
+    try { el.setSelectionRange(pos, pos); } catch(e) {}
+  }
+});
 
 </script>
 </body>
