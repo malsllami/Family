@@ -1,1 +1,3641 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة جمعية العائلة</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   جمعية العائلة — Premium Dashboard 2026
+   Direction: Luxury Glassmorphism + Depth
+   Font: Sora (display) + Noto Kufi Arabic (Arabic body)
+   Palette: Deep Obsidian base + Electric Indigo + Gold accent
+   Signature: Frosted glass cards, mesh gradients, smooth motion
+═══════════════════════════════════════════════════════════════ */
 
+/* ── Design Tokens ── */
+:root {
+  /* Core palette */
+  --ink:     #08111e;
+  --ink-1:   #0d1c2e;
+  --ink-2:   #132438;
+  --ink-3:   #1b3050;
+  --navy:    #1e3a5f;
+  --indigo:  #3b5bdb;
+  --indigo-l:#748ffc;
+  --gold:    #f0b429;
+  --gold-d:  #c07c0a;
+  --gold-l:  #ffe08a;
+  --emerald: #12b886;
+  --rose:    #f03e3e;
+  --amber:   #f59f00;
+
+  /* Glass surfaces */
+  --glass:        rgba(255,255,255,0.06);
+  --glass-border: rgba(255,255,255,0.12);
+  --glass-hover:  rgba(255,255,255,0.10);
+  --frosted:      rgba(13,28,46,0.75);
+
+  /* Light mode surfaces */
+  --bg:     #f0f4ff;
+  --bg-2:   #e4ebf8;
+  --surface: #ffffff;
+  --surface-2: #f7f9fe;
+  --text:   #0d1c2e;
+  --text-2: #3d5170;
+  --text-3: #6b7fa0;
+  --border: rgba(59,91,219,0.12);
+  --border-2: rgba(59,91,219,0.20);
+
+  /* Shadows */
+  --sh-xs: 0 1px 4px rgba(8,17,30,0.06);
+  --sh-sm: 0 2px 12px rgba(8,17,30,0.08);
+  --sh:    0 4px 24px rgba(8,17,30,0.10);
+  --sh-md: 0 8px 32px rgba(8,17,30,0.14);
+  --sh-lg: 0 16px 56px rgba(8,17,30,0.18);
+  --sh-xl: 0 24px 80px rgba(8,17,30,0.22);
+  --glow-indigo: 0 0 40px rgba(59,91,219,0.3);
+  --glow-gold:   0 0 40px rgba(240,180,41,0.3);
+
+  /* Radius — all generous */
+  --r-sm: 14px;
+  --r:    20px;
+  --r-lg: 28px;
+  --r-xl: 36px;
+  --r-2xl:48px;
+  --pill: 999px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.4,0,0.2,1);
+  --spring: cubic-bezier(0.34,1.56,0.64,1);
+  --duration: 0.22s;
+
+  /* Legacy aliases */
+  --primary: #3b5bdb;
+  --primary-light: #748ffc;
+  --accent: #f0b429;
+  --accent-light: #ffe08a;
+  --success: #12b886;
+  --danger: #f03e3e;
+  --warning: #f59f00;
+  --card: var(--surface);
+  --shadow: var(--sh);
+  --shadow-md: var(--sh-md);
+  --shadow-lg: var(--sh-lg);
+  --radius: 20px;
+  --radius-sm: 14px;
+}
+
+/* ── Dark Mode ── */
+body.dark {
+  --bg:      #08111e;
+  --bg-2:    #0d1c2e;
+  --surface: #132438;
+  --surface-2: #1b3050;
+  --text:    #e8f0ff;
+  --text-2:  #94aacf;
+  --text-3:  #5a7398;
+  --border:  rgba(116,143,252,0.14);
+  --border-2: rgba(116,143,252,0.22);
+  --sh:    0 4px 24px rgba(0,0,0,0.35);
+  --sh-md: 0 8px 40px rgba(0,0,0,0.5);
+  --sh-lg: 0 16px 60px rgba(0,0,0,0.65);
+  --card: #132438;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body {
+  font-family: 'Noto Kufi Arabic', 'Sora', sans-serif;
+  background: var(--bg, #f0f4ff);
+  color: var(--text, #0d1c2e);
+  min-height: 100vh;
+  direction: rtl;
+  line-height: 1.65;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.22s ease, color 0.22s ease;
+}
+
+/* Mesh background gradient */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(59,91,219,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(240,180,41,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+body.dark::before {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(59,91,219,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(240,180,41,0.10) 0%, transparent 60%);
+}
+
+/* ── Layout ── */
+.container { max-width: 1120px; margin: 0 auto; padding: 0 18px; }
+.section    { padding: 28px 0; }
+.grid   { display: grid; gap: 16px; }
+.grid-2 { grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); }
+
+/* ═══════════════════ HEADER ═══════════════════ */
+.header {
+  background: #1e3a5f;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  transition: background 0.22s ease;
+}
+body:not(.dark) .header {
+  background: #1e3a5f;
+}
+body.dark .header { background: #0d1829; }
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  gap: 10px;
+  min-height: 58px;
+}
+.header-logo {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  letter-spacing: -0.3px;
+}
+.header-logo span { color: #ffe08a; }
+.header-nav { display: flex; gap: 6px; align-items: center; }
+.nav-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.9) !important;
+  padding: 7px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+.nav-btn:hover {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(255,255,255,0.25);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.nav-btn.active {
+  background: #3b5bdb;
+  border-color: #3b5bdb;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59,91,219,0.4);
+}
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 999px;
+  padding: 5px 12px 5px 6px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.9);
+  flex-shrink: 0;
+}
+.user-badge .role {
+  background: linear-gradient(135deg, #c07c0a, #f0b429);
+  color: #08111e;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.theme-toggle {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  width: 36px; height: 36px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 17px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  color: #fff;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.16);
+  transform: rotate(20deg) scale(1.1);
+}
+
+/* Mobile nav */
+.nav-menu-btn {
+  display: none;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #fff;
+  width: 38px; height: 38px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 18px;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.nav-menu-btn:hover { background: rgba(255,255,255,0.18); }
+.nav-dropdown {
+  display: none;
+  position: absolute;
+  top: 58px; right: 0; left: 0;
+  background: rgba(13,24,46,0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 199;
+  padding: 12px 16px 16px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.nav-dropdown.open { display: flex; }
+.nav-dropdown .nav-btn {
+  width: 100%; text-align: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+/* ═══════════════════ STAT CARDS ═══════════════════ */
+#admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.stat-card {
+  border-radius: 36px;
+  padding: 22px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s cubic-bezier(0.4,0,0.2,1);
+  cursor: default;
+}
+.stat-card:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.stat-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(8px);
+}
+.stat-val {
+  font-family: 'Sora', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  color: #fff !important;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.stat-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.75) !important;
+  margin-top: 6px;
+  font-weight: 500;
+}
+.stat-card.blue { background: linear-gradient(145deg, #1e3a8a, #3b5bdb) !important; color: #fff !important; box-shadow: 0 8px 32px rgba(59,91,219,0.35); }
+.stat-card.gold { background: linear-gradient(145deg, #92400e, #d97706) !important; color: #fff !important; box-shadow: 0 8px 32px rgba(217,119,6,0.35); }
+.stat-card.green { background: linear-gradient(145deg, #065f46, #059669) !important; color: #fff !important; box-shadow: 0 8px 32px rgba(5,150,105,0.35); }
+.stat-card.purple { background: linear-gradient(145deg, #4c1d95, #7c3aed) !important; color: #fff !important; box-shadow: 0 8px 32px rgba(124,58,237,0.35); }
+.stat-card.blue:hover   { box-shadow: 0 16px 48px rgba(59,91,219,0.5); }
+.stat-card.gold:hover   { box-shadow: 0 16px 48px rgba(217,119,6,0.5); }
+.stat-card.green:hover  { box-shadow: 0 16px 48px rgba(5,150,105,0.5); }
+.stat-card.purple:hover { box-shadow: 0 16px 48px rgba(124,58,237,0.5); }
+
+/* ═══════════════════ CARDS ═══════════════════ */
+.card {
+  background: var(--surface);
+  border-radius: 36px;
+  padding: 22px;
+  box-shadow: var(--sh);
+  border: 1px solid var(--border);
+  transition: box-shadow 0.22s cubic-bezier(0.4,0,0.2,1), transform 0.22s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  z-index: 1;
+}
+.card:hover { box-shadow: var(--sh-md); }
+.card-title {
+  font-size: 16px; font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ═══════════════════ SECTION TITLE ═══════════════════ */
+.section-title {
+  font-size: 17px; font-weight: 700;
+  color: var(--text);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::before {
+  content: '';
+  width: 4px; height: 22px;
+  background: linear-gradient(to bottom, #3b5bdb, #f0b429);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.section-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap; gap: 12px;
+}
+
+/* ═══════════════════ BUTTONS ═══════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  cursor: pointer; border: none;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap; line-height: 1.2;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, #3b5bdb, #5c7cfa);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59,91,219,0.35);
+}
+.btn-primary:hover {
+  box-shadow: 0 8px 24px rgba(59,91,219,0.5);
+  transform: translateY(-2px);
+}
+.btn-accent {
+  background: linear-gradient(135deg, #c07c0a, #f0b429);
+  color: #08111e;
+  box-shadow: 0 4px 16px rgba(240,180,41,0.35);
+}
+.btn-accent:hover {
+  box-shadow: 0 8px 24px rgba(240,180,41,0.5);
+  transform: translateY(-2px);
+}
+.btn-success {
+  background: linear-gradient(135deg, #065f46, #12b886);
+  color: #fff;
+}
+.btn-success:hover { transform: translateY(-2px); }
+.btn-danger {
+  background: linear-gradient(135deg, #7f1d1d, #f03e3e);
+  color: #fff;
+}
+.btn-danger:hover { transform: translateY(-2px); }
+.btn-warning {
+  background: linear-gradient(135deg, #78350f, #f59f00);
+  color: #fff;
+}
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--border-2);
+  color: var(--text-2);
+}
+.btn-outline:hover {
+  background: #3b5bdb;
+  border-color: #3b5bdb;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.btn-sm  { padding: 6px 14px; font-size: 12px; }
+.btn-lg  { padding: 14px 28px; font-size: 15px; }
+
+/* ═══════════════════ BADGES ═══════════════════ */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px; font-weight: 700;
+  white-space: nowrap;
+}
+.badge-success { background: rgba(18,184,134,0.12); color: #059669; border: 1px solid rgba(18,184,134,0.2); }
+.badge-warning { background: rgba(245,159,0,0.12);  color: #d97706; border: 1px solid rgba(245,159,0,0.2); }
+.badge-danger  { background: rgba(240,62,62,0.12);  color: #dc2626; border: 1px solid rgba(240,62,62,0.2); }
+.badge-info    { background: rgba(59,91,219,0.10);  color: #3b5bdb; border: 1px solid rgba(59,91,219,0.2); }
+.badge-gray    { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
+body.dark .badge-success { background:rgba(18,184,134,0.15); color:#34d399; }
+body.dark .badge-warning { background:rgba(245,159,0,0.15);  color:#fbbf24; }
+body.dark .badge-info    { background:rgba(116,143,252,0.15); color:#748ffc; }
+body.dark .badge-gray    { background:var(--surface-2); color:var(--text-3); }
+
+/* ═══════════════════ FORMS ═══════════════════ */
+.form-group  { margin-bottom: 18px; }
+.form-label  { display: block; font-size: 12px; font-weight: 700; color: var(--text-3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-control {
+  width: 100%; padding: 13px 16px;
+  border: 1.5px solid var(--border-2);
+  border-radius: 16px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit; font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+}
+.form-control:focus {
+  border-color: #3b5bdb;
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(59,91,219,0.12), inset 0 1px 3px rgba(0,0,0,0.04);
+}
+.form-control:hover { border-color: #3b5bdb; }
+select.form-control { cursor: pointer; }
+textarea.form-control { min-height: 90px; resize: vertical; }
+.input-group { position: relative; margin-bottom: 20px; }
+.input-group .form-control { padding-right: 46px; }
+.input-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; pointer-events: none; }
+body.dark .form-control {
+    background: var(--surface-2) !important;
+    border-color: rgba(116,143,252,0.25) !important;
+    color: var(--text) !important;
+  }
+body.dark .form-control:focus { border-color: #748ffc; box-shadow: 0 0 0 4px rgba(116,143,252,0.12); }
+input, select, textarea { font-size: 14px !important; }
+
+/* ═══════════════════ TABLES ═══════════════════ */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 36px;
+  box-shadow: var(--sh);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.table-empty { text-align:center; padding:48px 20px; color:var(--text-3); font-size:14px; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: linear-gradient(135deg, #0d1c2e, #132438);
+  color: rgba(255,255,255,0.9);
+  padding: 13px 16px;
+  font-size: 12px; font-weight: 600;
+  text-align: right; white-space: nowrap;
+}
+td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-2); }
+body.dark th { background: linear-gradient(135deg, #0d1c2e, #132438); }
+body.dark tr:hover td { background: var(--surface-2); }
+
+/* ═══════════════════ TABS ═══════════════════ */
+.tabs {
+  display: flex; gap: 4px;
+  background: var(--surface-2);
+  border-radius: 36px;
+  padding: 5px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border: 1px solid var(--border);
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex: 1; padding: 10px 8px;
+  border-radius: 28px;
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: none;
+  background: transparent; color: var(--text-3);
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  white-space: nowrap; min-width: fit-content;
+}
+.tab-btn.active {
+  background: #3b5bdb;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59,91,219,0.3);
+}
+.tab-btn:hover:not(.active) { background: var(--bg-2); color: var(--text); }
+body.dark .tabs { background: var(--surface-2); }
+body.dark .tab-btn.active { background: #3b5bdb; }
+
+/* ═══════════════════ LOGIN TABS ═══════════════════ */
+.login-tabs {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 36px;
+  padding: 5px;
+  margin-bottom: 26px;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.login-tab {
+  padding: 12px;
+  border-radius: 18px;
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.5) !important;
+  transition: all 0.2s ease;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.login-tab.active {
+  background: rgba(255,255,255,0.16) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+.tab-icon { font-size: 16px; }
+
+/* ═══════════════════ PROGRESS ═══════════════════ */
+.progress-wrap { margin-top: 10px; }
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--text-3);
+  margin-bottom: 6px; font-weight: 600;
+}
+.progress-bar {
+  height: 8px;
+  background: var(--bg-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 999px;
+  transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.progress-fill.green  { background: linear-gradient(90deg, #065f46, #12b886); }
+.progress-fill.blue   { background: linear-gradient(90deg, #1e3a8a, #3b5bdb); }
+.progress-fill.gold   { background: linear-gradient(90deg, #c07c0a, #f0b429); }
+.progress-fill.red    { background: linear-gradient(90deg, #7f1d1d, #f03e3e); }
+.progress-fill.purple { background: linear-gradient(90deg, #4c1d95, #7c3aed); }
+
+/* ═══════════════════ MODALS ═══════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5,10,20,0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.modal-overlay.open { display: flex; }
+.modal-overlay.open { display: flex; }
+.modal-box, .modal {
+  background: var(--surface);
+  border-radius: 28px;
+  padding: 24px;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 24px 80px rgba(8,17,30,0.45);
+  border: 1px solid var(--border);
+  animation: modalIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+.modal-box .form-control, .modal .form-control {
+  background: var(--bg) !important;
+  border-color: var(--border-2) !important;
+}
+.modal-box .form-control:focus, .modal .form-control:focus {
+  background: var(--surface) !important;
+  border-color: #3b5bdb !important;
+  box-shadow: 0 0 0 3px rgba(59,91,219,0.12) !important;
+}
+.modal-lg, .modal.modal-lg { max-width: 860px; }
+@keyframes modalIn {
+  from { opacity:0; transform:translateY(28px) scale(0.95); }
+  to   { opacity:1; transform:none; }
+}
+.modal-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.modal-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 18px; font-weight: 700;
+  color: var(--text);
+}
+.modal-close {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 34px; height: 34px;
+  cursor: pointer; font-size: 18px;
+  color: var(--text-3);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.modal-close:hover { background: #f03e3e; color: #fff; border-color: #f03e3e; }
+body.dark .modal-box { background: var(--surface); border-color: var(--border); }
+
+/* ═══════════════════ ASSOC CARDS ═══════════════════ */
+.assoc-card {
+  background: var(--surface);
+  border-radius: 48px;
+  padding: 22px;
+  box-shadow: var(--sh);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--border-2);
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.assoc-card:hover { box-shadow: var(--sh-md); transform: translateY(-3px); }
+.assoc-card.active-card { border-top-color: #12b886; }
+.assoc-card.ended-card  { border-top-color: var(--text-3); }
+.assoc-name { font-family:'Sora',sans-serif; font-size:16px; font-weight:700; color:var(--text); }
+.assoc-meta { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+.assoc-meta-item {
+  background: var(--bg-2);
+  border-radius: 20px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+}
+.assoc-meta-label { font-size:10px; color:var(--text-3); font-weight:600; margin-bottom:2px; text-transform:uppercase; letter-spacing:.5px; }
+.assoc-meta-val { font-size:15px; font-weight:700; color:#3b5bdb; }
+body.dark .assoc-card { background:var(--surface); }
+body.dark .assoc-meta-item { background:var(--surface-2); }
+body.dark .assoc-meta-val { color:#748ffc; }
+
+/* ═══════════════════ MONTH CARDS ═══════════════════ */
+.month-card {
+  background: var(--surface);
+  border-radius: 48px;
+  padding: 20px;
+  box-shadow: var(--sh);
+  border: 1px solid var(--border);
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.month-card:hover { box-shadow: var(--sh-md); transform: translateY(-2px); }
+.month-num { font-family:'Sora',sans-serif; font-size:32px; font-weight:900; color:#3b5bdb; line-height:1; }
+.month-label { font-size:11px; color:var(--text-3); margin-top:3px; }
+.month-status { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+.month-btns { display:flex; gap:8px; flex-wrap:wrap; }
+.month-btns .btn { flex:1; justify-content:center; min-width:80px; }
+body.dark .month-card { background:var(--surface); }
+body.dark .month-num { color:#748ffc; }
+
+/* ═══════════════════ SUMMARY CARDS ═══════════════════ */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px; margin-bottom: 16px;
+}
+.summary-card {
+  border-radius: 28px;
+  padding: 14px 12px;
+  text-align: center;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+}
+.summary-card-val { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; line-height:1.1; }
+.summary-card-lbl { font-size:10px; color:var(--text-3); margin-top:4px; font-weight:600; }
+.summary-card.blue  .summary-card-val { color:#3b5bdb; }
+.summary-card.gold  .summary-card-val { color:#c07c0a; }
+.summary-card.green .summary-card-val { color:#12b886; }
+.summary-card.red   .summary-card-val { color:#f03e3e; }
+
+/* ═══════════════════ COUNTER CARD ═══════════════════ */
+.counter-card {
+  background: linear-gradient(135deg, #0d1c2e, #1e3a5f);
+  color: #fff;
+  border-radius: 48px;
+  padding: 20px 22px;
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(8,17,30,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.counter-card-label { font-size:12px; opacity:.7; margin-bottom:4px; }
+.counter-card-val { font-family:'Sora',sans-serif; font-size:26px; font-weight:800; line-height:1; }
+.counter-card-sub { font-size:12px; opacity:.65; margin-top:4px; }
+.counter-card-right { flex-shrink:0; }
+.ring { position:relative; width:80px; height:80px; }
+.ring svg circle.counter-ring-bg  { fill:none; stroke:rgba(255,255,255,0.12); stroke-width:6; }
+.ring svg circle.counter-ring-fill { fill:none; stroke:#f0b429; stroke-width:6; stroke-linecap:round; transform:rotate(-90deg); transform-origin:center; transition:stroke-dashoffset .6s cubic-bezier(0.4,0,0.2,1); }
+.counter-ring-text { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#ffe08a; }
+
+/* ═══════════════════ WISH GRID ═══════════════════ */
+.wish-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+  gap: 12px;
+}
+.wish-month-card {
+  border: 2px solid var(--border);
+  border-radius: 48px;
+  padding: 18px 14px;
+  text-align: center; cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  background: var(--surface);
+}
+.wish-month-card:hover {
+  border-color: #3b5bdb;
+  box-shadow: 0 0 40px rgba(59,91,219,0.3);
+  transform: translateY(-3px) scale(1.02);
+}
+.wish-month-card.selected {
+  border-color: #12b886;
+  background: rgba(18,184,134,0.06);
+  box-shadow: 0 0 32px rgba(18,184,134,0.2);
+}
+.wish-month-card.full {
+  border-color: #f03e3e;
+  background: rgba(240,62,62,0.05);
+  opacity: .7; pointer-events: none;
+}
+.wish-month-num { font-family:'Sora',sans-serif; font-size:28px; font-weight:900; color:#3b5bdb; }
+.wish-month-shares { font-size:12px; color:var(--text-3); margin-top:4px; }
+body.dark .wish-month-card { background:var(--surface-2); border-color:var(--border); }
+body.dark .wish-month-num { color:#748ffc; }
+
+/* ═══════════════════ MEMBER PROFILE ═══════════════════ */
+.mpc-block, .member-profile-card {
+  background: var(--surface);
+  border-radius: 48px;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.mpc-header {
+  background: linear-gradient(145deg, #08111e, #1e3a5f);
+  color: #fff;
+  padding: 30px 24px 64px;
+  position: relative;
+  overflow: hidden;
+}
+.mpc-header::before {
+  content: '';
+  position: absolute;
+  top: -50px; left: -50px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,91,219,0.25) 0%, transparent 70%);
+}
+.mpc-avatar {
+  width: 64px; height: 64px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #c07c0a, #f0b429) !important;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', sans-serif;
+  font-size: 26px; font-weight: 800;
+  color: #08111e;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  border: 3px solid rgba(255,255,255,0.2);
+  position: relative; z-index: 1;
+}
+.mpc-name { font-family:'Sora',sans-serif; font-size:20px; font-weight:700; margin-top:12px; position:relative; z-index:1; }
+.mpc-phone { font-size:13px; opacity:.65; margin-top:4px; position:relative; z-index:1; }
+.mpc-body { padding: 0 20px 22px; margin-top: -42px; position: relative; }
+.mpc-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:18px; }
+.mpc-stat {
+  background: var(--surface);
+  border-radius: 28px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: var(--sh);
+  border: 1px solid var(--border);
+}
+.mpc-stat-val { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:#3b5bdb; }
+.mpc-stat-label { font-size:10px; color:var(--text-3); margin-top:3px; }
+body.dark .mpc-stat { background:var(--surface-2); }
+body.dark .mpc-stat-val { color:#748ffc; }
+
+/* ═══════════════════ DELIVERY LIST ═══════════════════ */
+.mpc-delivery-list { display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+.mpc-delivery-row {
+  display:flex; align-items:center; gap:12px;
+  background:var(--bg-2);
+  border-radius:28px;
+  padding:12px 14px;
+  border:1px solid var(--border);
+  transition:all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.mpc-delivery-row:hover { border-color:#3b5bdb; box-shadow:var(--sh-xs); }
+.mpc-delivery-month {
+  width:44px; height:44px;
+  border-radius:20px;
+  background:linear-gradient(135deg, #132438, #1e3a5f);
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Sora',sans-serif;
+  font-size:15px; font-weight:800; flex-shrink:0;
+}
+.mpc-delivery-info { flex:1; min-width:0; }
+.mpc-delivery-shares { font-size:14px; font-weight:700; color:var(--text); }
+.mpc-delivery-value  { font-size:13px; color:#12b886; font-weight:700; margin-top:2px; }
+.mpc-delivery-countdown {
+  background:var(--surface);
+  border-radius:20px;
+  padding:6px 10px;
+  text-align:center; min-width:72px;
+  font-size:12px; font-weight:700;
+  color:var(--text-2);
+  border:1px solid var(--border);
+}
+.mpc-delivery-countdown.urgent { color:#f03e3e; background:rgba(240,62,62,0.08); border-color:rgba(240,62,62,0.2); }
+.mpc-delivery-countdown.soon   { color:#f59f00; background:rgba(245,159,0,0.08); border-color:rgba(245,159,0,0.2); }
+
+/* ═══════════════════ MONTH ROW (member table) ═══════════════════ */
+.months-table-card { background:var(--surface); border-radius:48px; box-shadow:var(--sh); border:1px solid var(--border); overflow:hidden; margin-bottom:20px; }
+.months-table-card-header { background:linear-gradient(135deg,#0d1c2e,#1e3a5f); color:#fff; padding:15px 20px; font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.month-row-item { display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid var(--border); transition:background 0.22s cubic-bezier(0.4,0,0.2,1); }
+.month-row-item:last-child { border-bottom:none; }
+.month-row-item:hover { background:var(--bg-2); }
+.month-row-num { width:36px; height:36px; border-radius:14px; background:linear-gradient(135deg,#132438,#1e3a5f); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:14px; font-weight:800; flex-shrink:0; }
+.month-row-info { flex:1; min-width:0; }
+.month-row-shares { font-size:13px; font-weight:600; color:var(--text); }
+.month-row-date   { font-size:11px; color:var(--text-3); margin-top:2px; }
+.month-row-status { display:flex; flex-wrap:wrap; gap:4px; flex-shrink:0; }
+.status-pill { display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:700; }
+.status-pill.collected   { background:rgba(18,184,134,0.10); color:#059669; }
+.status-pill.uncollected { background:rgba(245,159,0,0.10);  color:#d97706; }
+.status-pill.delivery    { background:rgba(59,91,219,0.10);  color:#3b5bdb; }
+
+/* ═══════════════════ COUNTDOWN ═══════════════════ */
+.countdown-card { background:linear-gradient(135deg,#0d1c2e,#1e3a5f); border-radius:48px; padding:18px 20px; color:#fff; margin-top:12px; display:flex; align-items:center; gap:12px; border:1px solid rgba(255,255,255,0.08); }
+.countdown-icon { font-size:22px; flex-shrink:0; }
+.countdown-label { font-size:11px; opacity:.7; margin-bottom:2px; }
+.countdown-val { font-family:'Sora',sans-serif; font-size:16px; font-weight:800; }
+.countdown-units { display:flex; gap:8px; margin-top:6px; }
+.countdown-unit { background:rgba(255,255,255,0.10); border-radius:14px; padding:5px 10px; text-align:center; min-width:46px; }
+.countdown-unit-val { font-family:'Sora',sans-serif; font-size:18px; font-weight:900; line-height:1; }
+.countdown-unit-lbl { font-size:10px; opacity:.6; }
+
+/* ═══════════════════ CHECK ═══════════════════ */
+.check-wrap { display:flex; align-items:center; gap:8px; cursor:pointer; }
+.check-wrap input[type="checkbox"] { width:18px; height:18px; accent-color:#12b886; cursor:pointer; border-radius:4px; }
+
+/* ═══════════════════ CHIP ═══════════════════ */
+.next-delivery-chip { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#c07c0a,#f0b429); color:#08111e; border-radius:999px; padding:5px 14px; font-size:13px; font-weight:700; margin-top:8px; }
+
+/* ═══════════════════ LOADING ═══════════════════ */
+.loading { display:flex; align-items:center; justify-content:center; padding:48px; color:var(--text-3); }
+.spinner { width:28px; height:28px; border:3px solid var(--border); border-top-color:#3b5bdb; border-radius:50%; animation:spin .8s linear infinite; margin-left:10px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes shimmerLoad { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ═══════════════════ TOAST ═══════════════════ */
+#toast-container { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:8px; max-width:360px; }
+.toast {
+  display:flex; align-items:center; gap:10px;
+  padding:13px 18px;
+  border-radius:36px;
+  color:#fff; font-size:13px; font-weight:500;
+  box-shadow:var(--sh-lg);
+  backdrop-filter:blur(12px);
+  animation:toastIn .3s cubic-bezier(0.34,1.56,0.64,1);
+  border:1px solid rgba(255,255,255,0.12);
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(20px) scale(.94)} to{opacity:1;transform:none} }
+.toast.success { background:linear-gradient(135deg,#065f46,#12b886); }
+.toast.error   { background:linear-gradient(135deg,#7f1d1d,#f03e3e); }
+.toast.info    { background:linear-gradient(135deg,#1e3a8a,#3b5bdb); }
+.toast.warning { background:linear-gradient(135deg,#78350f,#f59f00); }
+
+/* ═══════════════════ PAGE ═══════════════════ */
+.page { display:none; }
+.page.active { display:block; animation:fadeUp .28s cubic-bezier(0.4,0,0.2,1); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+/* ═══════════════════ LOGIN PAGE ═══════════════════ */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  background: #08111e !important;
+  overflow: hidden;
+  position: relative;
+}
+.login-page::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 50%, rgba(59,91,219,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 85% 80%, rgba(240,180,41,0.10) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+.login-left {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 60px 40px;
+  position: relative;
+  z-index: 1;
+}
+.login-brand { text-align: center; color: #fff; }
+.login-brand-icon {
+  width: 96px; height: 96px;
+  background: linear-gradient(145deg, #c07c0a, #f0b429);
+  border-radius: 48px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+  margin: 0 auto 24px;
+  box-shadow: 0 20px 60px rgba(240,180,41,0.4);
+  transform: rotate(-4deg);
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:rotate(-4deg) translateY(0)} 50%{transform:rotate(-4deg) translateY(-8px)} }
+.login-brand h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: 30px; font-weight: 800;
+  margin-bottom: 10px; line-height: 1.2;
+}
+.login-brand h1 span { color: #ffe08a; display: block; }
+.login-brand p { font-size: 14px; opacity: .55; max-width: 280px; line-height: 1.8; margin: 0 auto; }
+.login-features {
+  margin-top: 44px;
+  display: flex; flex-direction: column; gap: 12px;
+  width: 100%; max-width: 300px;
+}
+.login-feature {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 28px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.login-feature:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.14); }
+.login-feature-icon { font-size: 20px; flex-shrink: 0; }
+.login-feature-text { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5; }
+
+/* Login right panel — Glassmorphism frosted card */
+.login-right {
+  width: 440px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 48px 40px;
+  position: relative; z-index: 1;
+  background: #0d1c2e;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+.login-form-title {
+  font-family: 'Sora', 'Noto Kufi Arabic', sans-serif;
+  font-size: 28px; font-weight: 800;
+  color: #ffffff !important; margin-bottom: 6px;
+}
+.login-form-subtitle { font-size: 14px; color: rgba(255,255,255,0.55) !important; margin-bottom: 28px; }
+.login-input {
+  width: 100%; padding: 14px 18px;
+  border-radius: 18px;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.10);
+  color: #ffffff !important;
+  font-family: inherit; font-size: 15px !important;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-appearance: none;
+}
+.login-input::placeholder { color: rgba(255,255,255,0.3); }
+.login-input:focus {
+  border-color: #748ffc;
+  background: rgba(255,255,255,0.10);
+  box-shadow: 0 0 0 4px rgba(116,143,252,0.15);
+}
+.btn-login {
+  width: 100%; padding: 14px;
+  border-radius: 999px;
+  font-family: 'Sora', inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; border: none;
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  margin-top: 6px;
+}
+.btn-login:active { transform: scale(0.97); }
+.btn-login.member-btn {
+  background: linear-gradient(135deg, #3b5bdb, #5c7cfa) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(59,91,219,0.4);
+}
+.btn-login.admin-btn {
+  background: linear-gradient(135deg, #c07c0a, #f0b429) !important;
+  color: #08111e !important;
+  box-shadow: 0 8px 24px rgba(240,180,41,0.4);
+}
+.login-divider { text-align:center; color:rgba(255,255,255,0.2); font-size:12px; margin:18px 0; position:relative; }
+.login-divider::before, .login-divider::after { content:''; position:absolute; top:50%; width:38%; height:1px; background:rgba(255,255,255,0.12); }
+.login-divider::before { right:0; } .login-divider::after { left:0; }
+
+/* ═══════════════════ PAGE HEADERS ═══════════════════ */
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:12px; }
+.page-header h2 { font-family:'Sora',sans-serif; font-size:20px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px; }
+.back-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--surface); border:1.5px solid var(--border);
+  color:var(--text-2); padding:8px 16px;
+  border-radius:999px; cursor:pointer;
+  font-family:inherit; font-size:13px; font-weight:600;
+  transition:all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.back-btn:hover { background:#3b5bdb; color:#fff; border-color:#3b5bdb; transform:translateY(-1px); }
+
+/* ═══════════════════ INFO BANNER ═══════════════════ */
+#assoc-info-banner {
+  background: linear-gradient(135deg, #0d1c2e, #1e3a5f);
+  color: #fff;
+  border-radius: 48px;
+  padding: 20px 22px;
+  margin-bottom: 24px;
+  box-shadow: var(--sh-md);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ═══════════════════ WISH ERROR BOX ═══════════════════ */
+#wish-error-box {
+  background: rgba(240,62,62,0.08);
+  border: 1px solid rgba(240,62,62,0.25);
+  border-radius: 28px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  font-size: 13px; color: #f03e3e;
+  font-weight: 600; line-height: 1.6; white-space: pre-line;
+}
+
+/* ═══════════════════ TOTALS ROW ═══════════════════ */
+.totals-row {
+  background: linear-gradient(135deg, #0d1c2e, #1e3a5f);
+  color: #fff;
+  border-radius: 36px;
+  padding: 16px 20px;
+  display: flex; flex-wrap: wrap; gap: 20px;
+  margin-top: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.totals-item { text-align: center; }
+.totals-val { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; }
+.totals-label { font-size:11px; opacity:.7; margin-top:2px; }
+
+/* ═══════════════════ RESPONSIVE ═══════════════════ */
+@media (max-width: 900px) {
+  .summary-cards { grid-template-columns: repeat(2,1fr); }
+  .header-inner { padding: 10px 16px; }
+}
+@media (max-width: 600px) {
+  .header-inner { padding: 8px 12px; gap: 6px; min-height: 52px; }
+  .header-logo  { font-size: 14px; }
+  .header-logo span { display: none; }
+  .header-nav   { display: none; }
+  .nav-menu-btn { display: flex; }
+  .user-badge   { font-size: 11px; padding: 4px 8px; }
+  .user-badge .role { display: none; }
+  .login-left   { display: none; }
+  .login-right {
+  width: 440px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 48px 40px;
+  position: relative; z-index: 1;
+  background: #0d1c2e;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+  .page-header  { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .page-header h2 { font-size: 17px; }
+  .card   { padding: 16px; border-radius: 36px; }
+  .tabs   { gap: 3px; border-radius: 36px; }
+  .tab-btn { padding: 8px 6px; font-size: 11px; }
+  .summary-cards { grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .summary-card-val { font-size: 18px; }
+  .wish-grid { grid-template-columns: repeat(auto-fill,minmax(130px,1fr)); gap: 8px; }
+  .wish-month-num { font-size: 24px; }
+  .modal-overlay { padding: 10px; }
+  .modal-box, .modal { padding: 18px; border-radius: 24px; }
+  .modal-title { font-size: 16px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 460px; }
+  .btn { padding: 8px 14px; font-size: 12px; }
+  .btn-lg { padding: 13px 22px; font-size: 14px; }
+  .counter-card { flex-direction: column; gap: 14px; }
+  .month-card { padding: 16px; }
+  .month-num { font-size: 28px; }
+  .mpc-header { padding: 24px 18px 56px; }
+  .mpc-body   { padding: 0 14px 18px; }
+  .mpc-stats  { gap: 8px; }
+  .mpc-stat-val { font-size: 18px; }
+  #admin-stats-grid { gap: 10px; }
+  .stat-val { font-size: 28px !important; }
+  input, select, textarea { font-size: 15px !important; }
+}
+@media (max-width: 380px) {
+  .wish-grid { grid-template-columns: 1fr 1fr; }
+  .summary-cards { grid-template-columns: 1fr 1fr; }
+  .tab-btn { font-size: 10px; padding: 7px 3px; }
+}
+
+
+/* Modal inner layout fix */
+.modal { display: flex; flex-direction: column; }
+.modal > .modal-close {
+  position: absolute;
+  top: 16px; left: 16px;
+  z-index: 10;
+}
+.modal > .modal-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 18px; font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+  padding-left: 44px;
+}
+.modal > .modal-box {
+  position: static;
+}
+
+/* Table scrolling inside modals */
+.modal .table-wrap, .modal-box .table-wrap {
+  max-height: 380px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Select dropdown visible border */
+select.form-control {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7fa0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 14px center;
+}
+body.dark select.form-control {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394aacf' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+</style>
+</head>
+<body>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="page-login" class="login-page active">
+
+  <!-- Left Panel - Branding -->
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="login-brand-icon">🏛️</div>
+      <h1>إدارة<span>جمعية العائلة</span></h1>
+      <p>نظام متكامل لإدارة الجمعيات العائلية، التحصيل، والتسليم بكل سهولة وشفافية</p>
+    </div>
+    <div class="login-features">
+      <div class="login-feature">
+        <div class="login-feature-icon">👥</div>
+        <div class="login-feature-text">إدارة الأعضاء والاشتراكات في جمعيات متعددة</div>
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon">📅</div>
+        <div class="login-feature-text">تتبع التحصيل والتسليم شهراً بشهر</div>
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon">🎯</div>
+        <div class="login-feature-text">نظام رغبات مرن لاختيار شهر الاستلام</div>
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon">📊</div>
+        <div class="login-feature-text">تقارير وإجماليات فورية لكل جمعية</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel - Form -->
+  <div class="login-right">
+    <div style="width:100%;max-width:340px">
+
+      <div class="login-form-title">أهلاً بك 👋</div>
+      <div class="login-form-subtitle">اختر طريقة الدخول المناسبة لك</div>
+
+      <!-- تبويبان: دخول عضو + المدير -->
+      <div class="login-tabs" style="grid-template-columns:1fr 1fr">
+        <button class="login-tab active" onclick="switchLoginTab('member')">
+          <span class="tab-icon">🔑</span> دخول عضو
+        </button>
+        <button class="login-tab" onclick="switchLoginTab('admin')">
+          <span class="tab-icon">👑</span> المدير
+        </button>
+      </div>
+
+      <!-- دخول عضو -->
+      <div id="tab-member">
+        <div style="background:rgba(59,91,219,0.12);border:1px solid rgba(116,143,252,0.25);border-radius:var(--r-lg);padding:13px 16px;margin-bottom:22px;font-size:13px;color:#93c5fd">
+          🔑 أدخل رقم جوالك المسجل للدخول مباشرة
+        </div>
+        <div style="margin-bottom:20px">
+          <input type="tel" id="login-phone" class="login-input" placeholder="05XXXXXXXX" dir="ltr"
+            onkeydown="if(event.key==='Enter') loginMember()">
+        </div>
+        <button class="btn-login member-btn" onclick="loginMember()">
+          🚀 دخول
+        </button>
+      </div>
+
+      <!-- حقول مخفية للتسجيل (داخلي) -->
+      <div id="tab-register" style="display:none">
+        <input type="text" id="reg-name" style="display:none">
+        <input type="tel" id="reg-phone" style="display:none">
+      </div>
+
+      <!-- دخول مدير -->
+      <div id="tab-admin" style="display:none">
+        <div style="background:rgba(240,180,41,0.12);border:1px solid rgba(240,180,41,0.25);border-radius:var(--r-lg);padding:13px 16px;margin-bottom:22px;font-size:13px;color:var(--gold-l)">
+          👑 هذه الصفحة مخصصة لمدير الجمعية فقط
+        </div>
+        <div style="margin-bottom:20px">
+          <input type="password" id="admin-code" class="login-input" placeholder="رمز المدير السري"
+            onkeydown="if(event.key==='Enter') adminLogin()">
+        </div>
+        <button class="btn-login admin-btn" onclick="adminLogin()">
+          👑 دخول لوحة التحكم
+        </button>
+      </div>
+
+      <p style="margin-top:28px;font-size:12px;color:var(--text-muted);text-align:center;line-height:1.7">
+        بحاجة للمساعدة؟ تواصل مع مدير الجمعية<br>
+        <span style="opacity:0.5">نظام إدارة جمعية العائلة © 2025</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app" style="display:none">
+  <header class="header" style="position:relative">
+    <div class="header-inner">
+      <div class="header-logo">🏛️ <span>إدارة جمعية العائلة</span></div>
+      <!-- أزرار الناف للشاشات الكبيرة -->
+      <div class="header-nav" id="header-nav"></div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="تبديل المظهر">🌙</button>
+        <div class="user-badge">
+          <span id="user-name-display">-</span>
+          <span class="role" id="user-role-display">عضو</span>
+        </div>
+        <button class="nav-btn" onclick="logout()" style="background:rgba(220,38,38,0.2);border-color:rgba(220,38,38,0.4);padding:5px 10px;font-size:12px">خروج</button>
+        <!-- زر القائمة للموبايل -->
+        <button class="nav-menu-btn" id="nav-menu-btn" onclick="toggleMobileNav()">☰</button>
+      </div>
+    </div>
+    <!-- قائمة منسدلة للموبايل -->
+    <div class="nav-dropdown" id="nav-dropdown"></div>
+  </header>
+
+  <!-- ===== ADMIN DASHBOARD ===== -->
+  <div id="page-admin" class="page">
+    <div class="container section">
+      <div id="admin-stats-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:4px"></div>
+      
+      <!-- Management Tabs -->
+      <div class="tabs" style="margin-top:8px">
+        <button class="tab-btn active" onclick="adminTab('members')">👥 الأعضاء</button>
+        <button class="tab-btn" onclick="adminTab('associations')">🏛️ الجمعيات</button>
+        <button class="tab-btn" onclick="adminTab('subscriptions')">📋 الاشتراكات</button>
+        <button class="tab-btn" onclick="adminTab('wishes')">🎯 الرغبات</button>
+        <button class="tab-btn" onclick="adminTab('settings')">⚙️ الإعدادات</button>
+      </div>
+
+      <!-- Members Tab -->
+      <div id="admin-tab-members">
+        <div class="section-header">
+          <div class="section-title">الأعضاء المسجلون</div>
+          <button class="btn btn-primary" onclick="openAddMemberModal()">➕ إضافة عضو</button>
+        </div>
+        <div class="card" style="padding:0">
+          <div id="members-table-wrap">
+            <div class="loading"><div class="spinner"></div> جاري التحميل...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Associations Tab -->
+      <div id="admin-tab-associations" style="display:none">
+        <div class="section-header">
+          <div class="section-title">الجمعيات</div>
+          <button class="btn btn-primary" onclick="openAddAssocModal()">➕ إنشاء جمعية</button>
+        </div>
+        <div id="admin-assoc-grid" class="grid grid-2"></div>
+      </div>
+
+      <!-- Subscriptions Tab -->
+      <div id="admin-tab-subscriptions" style="display:none">
+        <div class="section-header">
+          <div class="section-title">اشتراكات الأعضاء</div>
+          <button class="btn btn-primary" onclick="openAddSubModal()">➕ إضافة اشتراك</button>
+        </div>
+        <div class="card" style="padding:0">
+          <div id="subs-table-wrap">
+            <div class="loading"><div class="spinner"></div> جاري التحميل...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <!-- Wishes Tab -->
+      <div id="admin-tab-wishes" style="display:none">
+        <div class="section-header">
+          <div class="section-title">🎯 رغبات الاستلام</div>
+        </div>
+        <div class="card" style="margin-bottom:16px;background:var(--bg);border:1px solid var(--border)">
+          <div style="font-size:13px;color:var(--text-muted)">
+            اختر جمعية وشهراً لعرض رغبات أعضائها وتعديلها
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+          <select id="admin-wish-assoc" class="form-control" style="max-width:260px" onchange="loadAdminWishes()">
+            <option value="">— اختر الجمعية —</option>
+          </select>
+          <select id="admin-wish-month" class="form-control" style="max-width:160px" onchange="loadAdminWishes()">
+            <option value="">— الشهر —</option>
+          </select>
+        </div>
+        <div id="admin-wishes-content"></div>
+      </div>
+
+      <div id="admin-tab-settings" style="display:none">
+        <div class="card" style="max-width:480px">
+          <div class="card-title" style="margin-bottom:20px">⚙️ إعدادات النظام</div>
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius: var(--r-sm);padding:12px 14px;margin-bottom:20px;font-size:13px;color:#1d4ed8">
+            ℹ️ هذه الإعدادات مخزّنة في جدول <strong>الاعدادات</strong> في Google Sheets ويمكن تعديلها من هنا أو مباشرة من الجدول
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">رمز المدير</label>
+              <input type="text" id="settings-admin-code" class="form-control" placeholder="رمز الدخول">
+            </div>
+            <div class="form-group">
+              <label class="form-label">مدة الجمعية الافتراضية (أشهر)</label>
+              <input type="number" id="settings-duration" class="form-control" min="1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">رقم جوال المدير <span style="color:var(--text-muted);font-weight:400">(لدخول صفحة الأعضاء)</span></label>
+            <div style="position:relative">
+              <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px">📱</span>
+              <input type="tel" id="settings-admin-phone" class="form-control" placeholder="05XXXXXXXX" dir="ltr" style="padding-right:44px">
+            </div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:6px">
+              💡 هذا الرقم يُستخدم للتنقل بين لوحة المدير وصفحة الأعضاء — ويجب أن يكون مسجلاً في جدول الأعضاء
+            </div>
+          </div>
+          <button class="btn btn-primary btn-lg" onclick="saveSettings()" style="margin-top:8px">💾 حفظ الإعدادات</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MEMBER PAGE ===== -->
+  <div id="page-member" class="page">
+    <div class="container section">
+      <div id="member-profile-area">
+        <div class="loading"><div class="spinner"></div> جاري التحميل...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MONTHS PAGE ===== -->
+  <div id="page-months" class="page">
+    <div class="container section">
+      <div class="section-header">
+        <div class="section-title" id="months-page-title">أشهر الجمعية</div>
+        <button class="btn btn-outline" onclick="goBack()">← رجوع</button>
+      </div>
+      <!-- Assoc Info Banner -->
+      <div id="assoc-info-banner" class="card" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:none;margin-bottom:24px">
+      </div>
+      <div id="months-grid" class="grid grid-3">
+        <div class="loading"><div class="spinner"></div> جاري التحميل...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WISHES PAGE ===== -->
+  <div id="page-wishes" class="page">
+    <div class="container section">
+      <div class="section-header">
+        <div class="section-title">رغباتي في الاستلام</div>
+        <button class="btn btn-outline" onclick="goBack()">← رجوع</button>
+      </div>
+      <div id="wishes-content">
+        <div class="loading"><div class="spinner"></div> جاري التحميل...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Member Modal -->
+<div id="modal-add-member" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add-member')">✕</button>
+    <div class="modal-title">➕ إضافة عضو جديد</div>
+    <div class="form-group">
+      <label class="form-label">الاسم الكامل</label>
+      <input type="text" id="add-member-name" class="form-control" placeholder="اسم العضو">
+    </div>
+    <div class="form-group">
+      <label class="form-label">رقم الجوال</label>
+      <input type="tel" id="add-member-phone" class="form-control" placeholder="05XXXXXXXX" dir="ltr">
+    </div>
+    <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center" onclick="addMember()">إضافة</button>
+  </div>
+</div>
+
+<!-- Add Association Modal -->
+<div id="modal-add-assoc" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add-assoc')">✕</button>
+    <div class="modal-title">🏛️ إنشاء جمعية جديدة</div>
+    <div class="form-group">
+      <label class="form-label">اسم الجمعية</label>
+      <input type="text" id="assoc-name" class="form-control" placeholder="اسم الجمعية">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">تاريخ البداية</label>
+        <input type="date" id="assoc-start" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">مدة الجمعية (أشهر)</label>
+        <input type="number" id="assoc-duration" class="form-control" min="1" placeholder="12">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">قيمة السهم (ريال)</label>
+        <input type="number" id="assoc-share-value" class="form-control" min="1" placeholder="500">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center" onclick="addAssociation()">إنشاء الجمعية</button>
+  </div>
+</div>
+
+<!-- Add Subscription Modal -->
+<div id="modal-add-sub" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add-sub')">✕</button>
+    <div class="modal-title">📋 إضافة اشتراك</div>
+    <div class="form-group">
+      <label class="form-label">الجمعية</label>
+      <select id="sub-assoc-id" class="form-control"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">العضو</label>
+      <select id="sub-member-id" class="form-control"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">عدد الأسهم</label>
+      <input type="number" id="sub-shares" class="form-control" min="0.5" step="0.5" placeholder="1">
+    </div>
+    <div id="sub-preview" style="background:var(--bg);border-radius: var(--r-sm);padding:14px;margin-bottom:16px;display:none">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">معاينة الاشتراك</div>
+      <div id="sub-preview-content"></div>
+    </div>
+    <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center" onclick="addSubscription()">تأكيد الاشتراك</button>
+  </div>
+</div>
+
+<!-- Join Association Modal (Member) -->
+<div id="modal-join-assoc" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-join-assoc')">✕</button>
+    <div class="modal-title">➕ الاشتراك في جمعية</div>
+    <div id="available-assocs-list"></div>
+  </div>
+</div>
+
+<!-- Collection Modal -->
+<div id="modal-collection" class="modal-overlay">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('modal-collection')">✕</button>
+    <div class="modal-title" id="collection-modal-title">💰 التحصيل الشهري</div>
+    <div id="collection-table-wrap">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+    <div id="collection-totals"></div>
+  </div>
+</div>
+
+<!-- Delivery Modal -->
+<div id="modal-delivery" class="modal-overlay">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('modal-delivery')">✕</button>
+    <div class="modal-title" id="delivery-modal-title">📤 التسليم الشهري</div>
+    <div id="delivery-table-wrap">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+    <div id="delivery-totals"></div>
+  </div>
+</div>
+
+<!-- Wish Input Modal -->
+<div id="modal-wish" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-wish')">✕</button>
+    <div class="modal-title" id="wish-modal-title">🎯 تحديد الرغبة</div>
+    <div id="wish-modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// CONFIG
+// ============================================
+// تنسيق التاريخ بشكل مقروء
+function fmtDate(s) {
+  if (!s) return '';
+  try {
+    const d = new Date(s);
+    if (isNaN(d)) return s;
+    return d.toLocaleDateString('ar-SA', {year:'numeric', month:'2-digit', day:'2-digit'});
+  } catch(e) { return s; }
+}
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbyTt6QFu4PiFTfZC3t_qUNEBXcG8rMjQUxdoKBuw9xxkr9bIL1hCX_fR0XhcqU6XuaU/exec';
+
+// State
+let state = {
+  user: null,
+  isAdmin: false,
+  adminPhone: '',
+  adminMember: null,
+  viewingAssocId: null,
+  viewingAssocData: null,
+  backPage: null,
+  allAssocs: [],
+  allMembers: [],
+  allSubs: [],
+  defaultDuration: 12,
+  adminCode: '',
+};
+
+// ============================================
+// API
+// ============================================
+// ── Loading state indicator ──
+let _pendingRequests = 0;
+function _showLoading() {
+  _pendingRequests++;
+  let el = document.getElementById('global-loader');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'global-loader';
+    el.style.cssText = 'position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary));background-size:200% 100%;animation:shimmerLoad 1.2s linear infinite;z-index:9999;';
+    document.body.appendChild(el);
+  }
+  el.style.display = 'block';
+  el.style.opacity = '1';
+}
+function _hideLoading() {
+  _pendingRequests = Math.max(0, _pendingRequests - 1);
+  if (_pendingRequests === 0) {
+    const el = document.getElementById('global-loader');
+    if (el) { el.style.opacity = '0'; setTimeout(()=>{ if(el) el.style.display='none'; }, 300); }
+  }
+}
+
+async function api(params) {
+  _showLoading();
+  const url = API_URL + '?' + new URLSearchParams(params);
+  try {
+    const res = await fetch(url, {cache:'no-store'});
+    const data = await res.json();
+    return data;
+  } catch(e) {
+    return {error: 'خطأ في الاتصال بالخادم'};
+  } finally {
+    _hideLoading();
+  }
+}
+
+// ============================================
+// TOAST
+// ============================================
+function toast(msg, type='info') {
+  const icons = {success:'✅', error:'❌', info:'ℹ️', warning:'⚠️'};
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${icons[type]||'ℹ️'}</span> ${msg}`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ============================================
+// PAGE ROUTING
+// ============================================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  
+  // Update nav
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const nb = document.querySelector(`.nav-btn[data-page="${id}"]`);
+  if (nb) nb.classList.add('active');
+}
+
+function goBack() {
+  if (state.backPage) showPage(state.backPage);
+  else showPage(state.isAdmin ? 'admin' : 'member');
+}
+
+// ============================================
+// AUTH
+// ============================================
+function switchLoginTab(tab) {
+  ['member','admin'].forEach((t, i) => {
+    const el = document.getElementById('tab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+    const btns = document.querySelectorAll('.login-tab');
+    if (btns[i]) btns[i].classList.toggle('active', t === tab);
+  });
+}
+
+function openRegisterPanel() {
+  // أخفِ نموذج الدخول وأظهر نموذج التسجيل بانزلاق
+  document.getElementById('tab-member').style.display = 'none';
+  const reg = document.getElementById('tab-register');
+  reg.style.display = 'block';
+  reg.style.animation = 'slideUp 0.25s ease';
+  // أخفِ التبويبين
+  document.querySelectorAll('.login-tab').forEach(b => b.parentElement.style.display = 'none');
+}
+
+function closeRegisterPanel() {
+  document.getElementById('tab-register').style.display = 'none';
+  document.getElementById('tab-member').style.display = 'block';
+  // أظهر التبويبين
+  const tabs = document.querySelector('.login-tabs');
+  if (tabs) tabs.style.display = 'grid';
+}
+
+async function registerMember() {
+  const name = document.getElementById('reg-name').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  if (!name || !phone) return toast('يرجى تعبئة جميع الحقول', 'error');
+  
+  const res = await api({action:'registerMember', name, phone});
+  if (res.error) return toast(res.error, 'error');
+  
+  state.user = res;
+  enterApp(false);
+  toast('مرحباً ' + name + '! تم تسجيلك بنجاح', 'success');
+}
+
+async function loginMember() {
+  const phone = document.getElementById('login-phone').value.trim();
+  if (!phone) return toast('أدخل رقم الجوال', 'error');
+  
+  const res = await api({action:'loginMember', phone});
+  if (res.error) return toast(res.error, 'error');
+  
+  state.user = res;
+  enterApp(false);
+  toast('مرحباً ' + res.name, 'success');
+}
+
+async function adminLogin() {
+  const code = document.getElementById('admin-code').value.trim();
+  if (!code) return toast('أدخل رمز المدير', 'error');
+  
+  const res = await api({action:'adminLogin', code});
+  if (res.error) return toast(res.error, 'error');
+  
+  state.isAdmin = true;
+  // جلب بيانات المدير كعضو من الإعدادات
+  const settings = await api({action:'getSettings'});
+  state.adminPhone = settings.adminPhone || '';
+  state.user = {name: 'المدير', id: 'admin'};
+  
+  // إذا كان للمدير رقم جوال مسجل، نجلب بياناته كعضو
+  if (state.adminPhone) {
+    const memberData = await api({action:'loginMember', phone: state.adminPhone});
+    if (!memberData.error) {
+      state.adminMember = memberData; // حفظ بيانات المدير كعضو
+    }
+  }
+  
+  enterApp(true);
+  toast('مرحباً بك يا مدير 👑', 'success');
+}
+
+function enterApp(isAdmin) {
+  // حفظ الجلسة في sessionStorage
+  try {
+    sessionStorage.setItem('session', JSON.stringify({
+      user: state.user,
+      isAdmin: state.isAdmin,
+      adminPhone: state.adminPhone,
+      adminMember: state.adminMember,
+    }));
+  } catch(e) {}
+
+  document.getElementById('page-login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('user-name-display').textContent = state.user.name;
+  document.getElementById('user-role-display').textContent = isAdmin ? '👑 مدير' : 'عضو';
+  
+  buildNav();
+  
+  if (isAdmin) {
+    showPage('admin');
+    loadAdminDashboard();
+  } else {
+    showPage('member');
+    loadMemberDashboard();
+  }
+}
+
+function buildNav() {
+  const nav = document.getElementById('header-nav');
+  nav.innerHTML = '';
+  
+  if (state.isAdmin) {
+    addNavBtn(nav, 'admin', '🏛️ لوحة التحكم');
+    const memberBtn = document.createElement('button');
+    memberBtn.className = 'nav-btn';
+    memberBtn.dataset.page = 'member';
+    memberBtn.innerHTML = '👤 أنا كعضو';
+    memberBtn.onclick = () => {
+      if (!state.adminMember) {
+        toast('⚙️ يرجى إضافة رقم جوال المدير في تبويب الإعدادات أولاً', 'warning');
+        showPage('admin'); adminTab('settings'); return;
+      }
+      state.user = state.adminMember;
+      document.getElementById('user-name-display').textContent = state.adminMember.name;
+      document.getElementById('user-role-display').textContent = '👤 عضو';
+      showPage('member'); loadMemberDashboard();
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      memberBtn.classList.add('active');
+      closeMobileNav();
+    };
+    nav.appendChild(memberBtn);
+    const backBtn = document.createElement('button');
+    backBtn.className = 'nav-btn';
+    backBtn.innerHTML = '↩ لوحة التحكم';
+    backBtn.style.cssText = 'background:rgba(212,165,55,0.2);border-color:rgba(212,165,55,0.4)';
+    backBtn.id = 'btn-back-admin';
+    backBtn.onclick = () => {
+      state.user = {name:'المدير', id:'admin'};
+      document.getElementById('user-name-display').textContent = 'المدير';
+      document.getElementById('user-role-display').textContent = '👑 مدير';
+      showPage('admin'); loadAdminDashboard(); closeMobileNav();
+    };
+    nav.appendChild(backBtn);
+  } else {
+    addNavBtn(nav, 'member', '🏠 رئيسية');
+  }
+
+  // مزامنة قائمة الموبايل
+  syncMobileNav();
+}
+
+function syncMobileNav() {
+  const dropdown = document.getElementById('nav-dropdown');
+  if (!dropdown) return;
+  dropdown.innerHTML = document.getElementById('header-nav').innerHTML;
+  dropdown.querySelectorAll('.nav-btn').forEach((btn, i) => {
+    const orig = document.getElementById('header-nav').querySelectorAll('.nav-btn')[i];
+    if (orig) btn.onclick = () => { orig.click(); closeMobileNav(); };
+  });
+}
+
+function toggleMobileNav() {
+  const d = document.getElementById('nav-dropdown');
+  if (d) d.classList.toggle('open');
+}
+function closeMobileNav() {
+  const d = document.getElementById('nav-dropdown');
+  if (d) d.classList.remove('open');
+}
+// إغلاق عند النقر خارج القائمة
+document.addEventListener('click', e => {
+  if (!e.target.closest('.header')) closeMobileNav();
+});
+
+function addNavBtn(container, page, label) {
+  const btn = document.createElement('button');
+  btn.className = 'nav-btn';
+  btn.dataset.page = page;
+  btn.textContent = label;
+  btn.onclick = () => {
+    showPage(page);
+    if (page === 'admin') loadAdminDashboard();
+    if (page === 'member') loadMemberDashboard();
+  };
+  container.appendChild(btn);
+}
+
+function logout() {
+  try { sessionStorage.removeItem('session'); } catch(e) {}
+  state = {user:null,isAdmin:false,adminPhone:'',adminMember:null,viewingAssocId:null,viewingAssocData:null,backPage:null,allAssocs:[],allMembers:[],allSubs:[],defaultDuration:12,adminCode:''};
+  document.getElementById('page-login').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-phone') && (document.getElementById('login-phone').value = '');
+}
+
+// ============================================
+// ADMIN DASHBOARD
+// ============================================
+async function loadAdminDashboard() {
+  const [settings, members, assocs, subs] = await Promise.all([
+    api({action:'getSettings'}),
+    api({action:'getMembers'}),
+    api({action:'getAssociations'}),
+    api({action:'getSubscriptions'})
+  ]);
+  
+  state.allMembers = members || [];
+  state.allAssocs = assocs || [];
+  state.allSubs = subs || [];
+  state.defaultDuration = settings.defaultDuration || 12;
+  state.adminCode = settings.adminCode || '';
+  state.adminPhone = settings.adminPhone || '';
+  
+  // تحديث بيانات المدير كعضو إذا تغير الرقم
+  if (state.adminPhone && (!state.adminMember || state.adminMember.phone !== state.adminPhone)) {
+    const memberData = await api({action:'loginMember', phone: state.adminPhone});
+    if (!memberData.error) state.adminMember = memberData;
+  }
+  
+  // Settings fields
+  document.getElementById('settings-admin-code').value = state.adminCode;
+  document.getElementById('settings-duration').value = state.defaultDuration;
+  document.getElementById('settings-admin-phone').value = state.adminPhone;
+  
+  // إعادة بناء الـ nav لتحديث اسم العضو
+  buildNav();
+  
+  // Reset user display to admin
+  document.getElementById('user-name-display').textContent = 'المدير';
+  document.getElementById('user-role-display').textContent = '👑 مدير';
+  state.user = {name:'المدير', id:'admin'};
+  
+  // Stats
+  const activeAssocs = state.allAssocs.filter(a => a.status === 'نشطة').length;
+  document.getElementById('admin-stats-grid').innerHTML = `
+    <div class="stat-card blue">
+      <div class="stat-icon blue">👥</div>
+      <div class="stat-val">${state.allMembers.length}</div>
+      <div class="stat-label">إجمالي الأعضاء</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-icon gold">🏛️</div>
+      <div class="stat-val">${state.allAssocs.length}</div>
+      <div class="stat-label">إجمالي الجمعيات</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon green">✅</div>
+      <div class="stat-val">${activeAssocs}</div>
+      <div class="stat-label">الجمعيات النشطة</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-icon purple">📋</div>
+      <div class="stat-val">${state.allSubs.length}</div>
+      <div class="stat-label">إجمالي الاشتراكات</div>
+    </div>
+  `;
+  
+  renderMembersTable();
+  renderAdminAssocs();
+  renderSubsTable();
+}
+
+function adminTab(tab) {
+  const tabs = ['members','associations','subscriptions','wishes','settings'];
+  tabs.forEach(t => {
+    const el = document.getElementById('admin-tab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  if (tab === 'wishes') initAdminWishesPanel();
+}
+
+function renderMembersTable() {
+  const wrap = document.getElementById('members-table-wrap');
+  if (!state.allMembers.length) {
+    wrap.innerHTML = '<div class="table-empty">لا يوجد أعضاء مسجلون</div>';
+    return;
+  }
+  wrap.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>الاسم</th><th>رقم الجوال</th><th>تاريخ التسجيل</th><th>اشتراكاته</th><th>إجراءات</th>
+        </tr></thead>
+        <tbody>
+          ${state.allMembers.map((m, i) => {
+            const memberSubs = state.allSubs.filter(s => s.memberId === m.id).length;
+            return `<tr>
+              <td>${i+1}</td>
+              <td><strong>${m.name}</strong></td>
+              <td dir="ltr">${m.phone}</td>
+              <td>${m.date || '-'}</td>
+              <td><span class="badge badge-info">${memberSubs} جمعية</span></td>
+              <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteMember('${m.id}','${m.name}')">🗑️ حذف</button>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function renderAdminAssocs() {
+  const grid = document.getElementById('admin-assoc-grid');
+  if (!state.allAssocs.length) {
+    grid.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:40px;grid-column:1/-1">لا توجد جمعيات بعد</div>';
+    return;
+  }
+  grid.innerHTML = state.allAssocs.map(a => {
+    const shares      = parseFloat(a.sharesCount||0);
+    const sv          = parseFloat(a.shareValue||0);
+    const dur         = parseInt(a.duration||1);
+    const monthlyTotal = shares * sv;
+    const totalValue   = shares * sv * dur;
+
+    // تقدم الجمعية الزمني
+    const today    = new Date();
+    const start    = new Date(a.startDate);
+    const end      = new Date(a.endDate);
+    const totalMs  = end - start;
+    const passedMs = today - start;
+    const timePct  = totalMs > 0 ? Math.min(100, Math.max(0, Math.round(passedMs / totalMs * 100))) : 0;
+    const daysLeft = Math.max(0, Math.ceil((end - today) / 86400000));
+
+    // عدد الأشهر المغلقة
+    const assocSubs = state.allSubs.filter(s => s.assocId === a.id);
+    const closedMonths = 0; // سيُحسب من البيانات لاحقاً
+
+    return `
+    <div class="assoc-card ${a.status==='نشطة'?'active-card':a.status==='منتهية'?'ended-card':''}">
+      <!-- رأس البطاقة -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="assoc-name">${a.name}</div>
+        <span class="badge ${a.status==='نشطة'?'badge-success':a.status==='منتهية'?'badge-gray':'badge-info'}">${a.status}</span>
+      </div>
+
+      <!-- معلومات أساسية -->
+      <div class="assoc-meta" style="margin-bottom:10px">
+        <div class="assoc-meta-item">
+          <div class="assoc-meta-label">قيمة السهم</div>
+          <div class="assoc-meta-val">${Number(sv).toLocaleString('ar')} ﷼</div>
+        </div>
+        <div class="assoc-meta-item">
+          <div class="assoc-meta-label">المدة</div>
+          <div class="assoc-meta-val">${dur} شهر</div>
+        </div>
+        <div class="assoc-meta-item">
+          <div class="assoc-meta-label">المشتركون</div>
+          <div class="assoc-meta-val">${a.memberCount||0} عضو</div>
+        </div>
+        <div class="assoc-meta-item">
+          <div class="assoc-meta-label">الأسهم</div>
+          <div class="assoc-meta-val">${shares} سهم</div>
+        </div>
+      </div>
+
+      <!-- إجمالي قيمة الجمعية وعداد عكسي -->
+      <div style="background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius: var(--r-sm);padding:12px;margin-bottom:10px;color:white">
+        <div style="font-size:10px;opacity:0.8;margin-bottom:4px">💰 إجمالي قيمة التسليم الكلي</div>
+        <div style="font-size:20px;font-weight:900">${Number(totalValue).toLocaleString('ar')} ﷼</div>
+        <div style="font-size:11px;opacity:0.75;margin-top:2px">${shares} سهم × ${Number(sv).toLocaleString('ar')} ﷼ × ${dur} شهر</div>
+        <div style="margin-top:8px;display:flex;justify-content:space-between;font-size:12px;opacity:0.85">
+          <div>💵 شهرياً: ${Number(monthlyTotal).toLocaleString('ar')} ﷼</div>
+          <div>⏳ ${daysLeft} يوم متبقي</div>
+        </div>
+      </div>
+
+      <!-- شريط تقدم الجمعية الزمني -->
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:4px">
+          <span>⏱️ التقدم الزمني</span>
+          <span>${timePct}%</span>
+        </div>
+        <div class="progress-bar" style="height:8px">
+          <div class="progress-fill ${timePct>=100?'red':timePct>60?'gold':'green'}" style="width:${timePct}%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">
+          📅 ${fmtDate(a.startDate)} — ${fmtDate(a.endDate)}
+        </div>
+      </div>
+
+      <!-- أزرار -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="viewMonths('${a.id}','admin')" style="flex:1;justify-content:center">📅 الأشهر</button>
+        <button class="btn btn-accent btn-sm" onclick="syncAssociation('${a.id}','${a.name}')" title="مزامنة">🔄</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAssociation('${a.id}','${a.name}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSubsTable() {
+  const wrap = document.getElementById('subs-table-wrap');
+  if (!state.allSubs.length) {
+    wrap.innerHTML = '<div class="table-empty">لا توجد اشتراكات</div>';
+    return;
+  }
+  wrap.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>الجمعية</th><th>العضو</th><th>عدد الأسهم</th><th>قيمة الاشتراك</th><th>إجراءات</th>
+        </tr></thead>
+        <tbody>
+          ${state.allSubs.map((s, i) => {
+            const assoc = state.allAssocs.find(a => a.id === s.assocId);
+            const isNew = assoc && assoc.status === 'جديدة';
+            return `<tr>
+              <td>${i+1}</td>
+              <td>${s.assocName}</td>
+              <td>${s.memberName}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span id="sub-shares-disp-${i}">${s.sharesCount} سهم</span>
+                  ${isNew?`<button class="btn btn-outline btn-sm" onclick="toggleEditShares(${i},'${s.id}','${s.assocId}','${s.memberId}',${s.sharesCount})">✏️</button>`:''}
+                </div>
+                <div id="sub-edit-${i}" style="display:none;margin-top:6px">
+                  <div style="display:flex;gap:6px">
+                    <input type="number" id="sub-new-shares-${i}" class="form-control" value="${s.sharesCount}" min="0.5" step="0.5" style="width:80px;padding:5px 8px;font-size:13px">
+                    <button class="btn btn-success btn-sm" onclick="saveEditShares(${i},'${s.assocId}','${s.memberId}')">✅</button>
+                    <button class="btn btn-outline btn-sm" onclick="cancelEditShares(${i})">✕</button>
+                  </div>
+                </div>
+              </td>
+              <td>${Number(s.sharesValue).toLocaleString('ar')} ﷼</td>
+              <td>
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  ${isNew?`<button class="btn btn-warning btn-sm" onclick="withdrawMember('${s.assocId}','${s.memberId}','${s.memberName}')" style="background:#d97706;color:white">↩ انسحاب</button>`:''}
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function toggleEditShares(idx,subId,assocId,memberId,currentShares) {
+  document.getElementById('sub-edit-'+idx).style.display='block';
+}
+function cancelEditShares(idx) {
+  document.getElementById('sub-edit-'+idx).style.display='none';
+}
+async function saveEditShares(idx,assocId,memberId) {
+  const newShares=parseFloat(document.getElementById('sub-new-shares-'+idx).value)||0;
+  if(newShares<0.5) return toast('أقل قيمة 0.5 سهم','error');
+  // تحذير: سيتم حذف الرغبات
+  if(!confirm(`تعديل عدد الأسهم سيؤدي إلى:\n• حذف جميع رغبات هذا العضو\n• إعادة بناء سجلات التحصيل\n\nهل تريد المتابعة؟`)) return;
+  const res=await api({action:'updateSubscription',assocId,memberId,sharesCount:newShares});
+  if(res.error) return toast(res.error,'error');
+  toast('✅ تم تعديل الأسهم — يرجى من العضو إعادة تحديد رغباته','success');
+  loadAdminDashboard();
+}
+async function withdrawMember(assocId,memberId,memberName) {
+  if(!confirm(`انسحاب "${memberName}" من الجمعية؟\n\nسيتم حذف:\n• الاشتراك\n• جميع الرغبات\n• سجلات التحصيل والتسليم\n\nهذا الإجراء لا يمكن التراجع عنه.`)) return;
+  const res=await api({action:'withdrawSubscription',assocId,memberId});
+  if(res.error) return toast(res.error,'error');
+  toast('تم الانسحاب وحذف بيانات '+memberName,'success');
+  loadAdminDashboard();
+}
+async function adminReopenMonth(assocId, monthNum) {
+  if (!confirm(`إعادة فتح الشهر ${monthNum}؟\nسيُلغى الإغلاق ويمكن التعديل من جديد.`)) return;
+  const res = await api({action:'reopenMonth', assocId, monthNum: monthNum.toString()});
+  if (res.error) return toast(res.error, 'error');
+  toast(`✅ تم فتح الشهر ${monthNum}`, 'success');
+  viewMonths(assocId, 'admin');
+}
+
+async function syncAssociation(assocId,assocName) {
+  toast('جاري المزامنة...','info');
+  const res=await api({action:'syncAssociation',assocId});
+  if(res.error) return toast(res.error,'error');
+  toast(res.message||'تمت المزامنة','success');
+  loadAdminDashboard();
+  // إعادة تحميل الأشهر إن كانت مفتوحة
+  if(state.viewingAssocId===assocId) viewMonths(assocId, state.isAdmin?'admin':'member');
+}
+
+// ============================================
+// MEMBER DASHBOARD
+// ============================================
+async function loadMemberDashboard() {
+  if (!state.user) return;
+  const area = document.getElementById('member-profile-area');
+  if (area) area.innerHTML = '<div class="loading"><div class="spinner"></div> جاري التحميل...</div>';
+
+  const [assocs, subs, wishes, allMonths] = await Promise.all([
+    api({action:'getAssociations'}),
+    api({action:'getSubscriptions', memberId: state.user.id}),
+    api({action:'getWishes', memberId: state.user.id}),
+    api({action:'getMonths', assocId: '_all'}) // سيُرجع فارغاً لكن لا بأس
+  ]);
+
+  state.allAssocs   = assocs  || [];
+  const memberSubs  = subs    || [];
+  state.memberWishes = wishes || [];
+
+  const myAssocIds  = memberSubs.map(s => s.assocId);
+  const myAssocs    = state.allAssocs.filter(a => myAssocIds.includes(a.id));
+
+  const totalShares      = memberSubs.reduce((s,r) => s + parseFloat(r.sharesCount||0), 0);
+  const totalReceivable  = memberSubs.reduce((sum, s) => {
+    const a = state.allAssocs.find(x => x.id === s.assocId);
+    return a ? sum + parseFloat(s.sharesCount)*parseFloat(a.shareValue)*parseInt(a.duration) : sum;
+  }, 0);
+
+  /* ---- الحرف الأول من الاسم للأفاتار ---- */
+  const initials = (state.user.name||'').trim().charAt(0) || '؟';
+
+  /* ===== بطاقة الملف الشخصي ===== */
+  let profileHTML = `
+  <div class="member-profile-card">
+    <!-- Header -->
+    <div class="mpc-header">
+      <div class="mpc-avatar">${initials}</div>
+      <div class="mpc-name">${state.user.name}</div>
+      <div class="mpc-phone">📱 ${state.user.phone || ''}</div>
+    </div>
+
+    <!-- Body -->
+    <div class="mpc-body">
+      <!-- إحصاءات سريعة -->
+      <div class="mpc-stats">
+        <div class="mpc-stat">
+          <div class="mpc-stat-val">${myAssocs.length}</div>
+          <div class="mpc-stat-lbl">جمعياتي</div>
+        </div>
+        <div class="mpc-stat">
+          <div class="mpc-stat-val">${totalShares}</div>
+          <div class="mpc-stat-lbl">إجمالي أسهمي</div>
+        </div>
+        <div class="mpc-stat">
+          <div class="mpc-stat-val" style="font-size:16px;color:var(--success)">${Number(totalReceivable).toLocaleString('ar')}</div>
+          <div class="mpc-stat-lbl">إجمالي الاستلام ﷼</div>
+        </div>
+      </div>`;
+
+  if (!myAssocs.length) {
+    profileHTML += `
+      <div style="text-align:center;padding:32px;color:var(--text-muted)">
+        <div style="font-size:40px;margin-bottom:10px">🏛️</div>
+        <div style="font-weight:700;margin-bottom:8px">لم تشترك في أي جمعية بعد</div>
+        <button class="btn btn-primary" onclick="openJoinAssocModal()">➕ الاشتراك في جمعية</button>
+      </div>`;
+  } else {
+    /* لكل جمعية: بلوك كامل */
+    for (const a of myAssocs) {
+      const sub       = memberSubs.find(s => s.assocId === a.id);
+      const myShares  = sub ? parseFloat(sub.sharesCount) : 0;
+      const shareVal  = parseFloat(a.shareValue);
+      const dur       = parseInt(a.duration);
+      const myTotal   = myShares * shareVal * dur;
+
+      const startD    = new Date(a.startDate);
+      const endD      = new Date(a.endDate);
+      const today     = new Date();
+      const totalDays = Math.max(1, (endD - startD)/86400000);
+      const passed    = Math.max(0, (today - startD)/86400000);
+      const timePct   = Math.min(100, Math.round(passed/totalDays*100));
+      const daysLeft  = Math.max(0, Math.ceil((endD - today)/86400000));
+      const curMonth  = Math.min(dur, Math.max(1, Math.ceil(passed/(totalDays/dur))));
+
+      /* رغبات هذه الجمعية */
+      const myWishes   = (state.memberWishes||[]).filter(w => w.assocId === a.id && parseFloat(w.sharesCount)>0);
+      const wishedSh   = myWishes.reduce((s,w) => s+parseFloat(w.sharesCount),0);
+      const wishPct    = myShares>0 ? Math.min(100, Math.round(wishedSh/myShares*100)) : 0;
+
+      /* أشهر الاستلام (من الرغبات) */
+      const deliveryMonths = myWishes.sort((a,b)=>a.monthNum-b.monthNum);
+
+      profileHTML += `
+      <div class="mpc-assoc-block">
+        <div class="mpc-assoc-name">
+          🏛️ ${a.name}
+          <span class="badge ${a.status==='نشطة'?'badge-success':a.status==='منتهية'?'badge-gray':'badge-info'}" style="font-size:11px">${a.status}</span>
+        </div>
+
+        <!-- معلومات الجمعية: 2×2 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius: var(--r-sm);padding:10px 12px">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:3px">أسهمي في الجمعية</div>
+            <div style="font-size:17px;font-weight:800;color:var(--primary)">${myShares} سهم</div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius: var(--r-sm);padding:10px 12px">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:3px">إجمالي ما سأستلمه</div>
+            <div style="font-size:17px;font-weight:800;color:var(--success)">${Number(myTotal).toLocaleString('ar')} ﷼</div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius: var(--r-sm);padding:10px 12px">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:3px">قيمة السهم الشهري</div>
+            <div style="font-size:17px;font-weight:800;color:var(--primary)">${Number(shareVal).toLocaleString('ar')} ﷼</div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius: var(--r-sm);padding:10px 12px">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:3px">الشهر الحالي</div>
+            <div style="font-size:17px;font-weight:800;color:var(--primary)">${curMonth} / ${dur}</div>
+          </div>
+        </div>
+
+        <!-- مؤشر تقدم الجمعية -->
+        <div class="progress-wrap" style="margin-bottom:10px">
+          <div class="progress-label">
+            <span>⏱️ تقدم الجمعية الزمني</span>
+            <span>${timePct}% — ${daysLeft} يوم متبقي</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill ${timePct>=80?'red':timePct>=50?'gold':'blue'}" style="width:${timePct}%"></div>
+          </div>
+        </div>
+
+        <!-- مؤشر رغبات الاستلام -->
+        <div class="progress-wrap" style="margin-bottom:14px">
+          <div class="progress-label">
+            <span>🎯 رغبات الاستلام المحددة</span>
+            <span>${wishedSh} / ${myShares} سهم</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill ${wishPct>=100?'green':'gold'}" style="width:${wishPct}%"></div>
+          </div>
+        </div>
+
+        <!-- أشهر الاستلام من الرغبات -->
+        ${deliveryMonths.length ? `
+        <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-bottom:8px">📤 أشهر استلامي المحددة</div>
+        <div class="mpc-delivery-list">
+          ${deliveryMonths.map(w => {
+            const mDate = new Date(a.startDate);
+            mDate.setMonth(mDate.getMonth() + (parseInt(w.monthNum)-1));
+            const mDaysLeft = Math.max(0, Math.ceil((mDate - today)/86400000));
+            const mShares = parseFloat(w.sharesCount);
+            const mValue  = mShares * shareVal * dur;
+            const urgency = mDaysLeft <= 7 ? 'urgent' : mDaysLeft <= 30 ? 'soon' : '';
+            const mLabel  = mDaysLeft === 0 ? 'هذا الشهر 🔔' : mDaysLeft < 0 ? 'مضى' : `بعد ${mDaysLeft} يوم`;
+            return `
+            <div class="mpc-delivery-row">
+              <div class="mpc-delivery-month">الشهر ${w.monthNum}</div>
+              <div class="mpc-delivery-info">
+                <div class="mpc-delivery-shares">${mShares} سهم</div>
+                <div class="mpc-delivery-value">${Number(mValue).toLocaleString('ar')} ﷼</div>
+              </div>
+              <div class="mpc-delivery-countdown ${urgency}">
+                📅 ${mLabel}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>` : `
+        <div style="text-align:center;padding:12px;background:var(--bg);border-radius: var(--r-sm);font-size:13px;color:var(--text-muted)">
+          🎯 لم تحدد أشهر الاستلام بعد —
+          <button class="btn btn-outline btn-sm" onclick="viewWishes('${a.id}')">تحديد الآن</button>
+        </div>`}
+
+        <!-- أزرار -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+          <button class="btn btn-primary btn-sm" onclick="viewMonths('${a.id}','member')" style="flex:1;justify-content:center">📅 الأشهر</button>
+          <button class="btn btn-outline btn-sm" onclick="viewWishes('${a.id}')" style="flex:1;justify-content:center">🎯 رغباتي</button>
+          <button class="btn btn-outline btn-sm" onclick="openJoinAssocModal()">➕</button>
+        </div>
+      </div>`;
+    }
+  }
+
+  profileHTML += `</div></div>`; /* end mpc-body + member-profile-card */
+
+  if (area) area.innerHTML = profileHTML;
+
+  /* ===== جداول أشهر كل جمعية ===== */
+  let monthsHTML = '';
+  for (const a of myAssocs) {
+    const sub      = memberSubs.find(s => s.assocId === a.id);
+    const myShares = sub ? parseFloat(sub.sharesCount) : 0;
+    const shareVal = parseFloat(a.shareValue);
+    const dur      = parseInt(a.duration);
+
+    const months = await api({action:'getMonths', assocId: a.id});
+    const mList  = months || [];
+    if (!mList.length) continue;
+
+    const today     = new Date();
+    const startD    = new Date(a.startDate);
+    const totalDays = Math.max(1,(new Date(a.endDate)-startD)/86400000);
+
+    monthsHTML += `
+    <div class="months-table-card">
+      <div class="months-table-card-header">
+        🏛️ ${a.name} — جدول الأشهر
+        <span style="margin-right:auto;font-size:13px;opacity:0.8">${a.duration} شهر</span>
+      </div>
+      ${mList.map(m => {
+        const mDate    = new Date(a.startDate);
+        mDate.setMonth(mDate.getMonth() + (parseInt(m.monthNum)-1));
+        const mDaysLeft = Math.max(0, Math.ceil((mDate - today)/86400000));
+        const isPast   = mDate < today;
+        const isNow    = Math.ceil((today-startD)/86400000) / (totalDays/dur) >= parseInt(m.monthNum)-0.5
+                      && Math.ceil((today-startD)/86400000) / (totalDays/dur) <= parseInt(m.monthNum)+0.5;
+        const collected = m.collectionStatus === 'مكتمل';
+        const delivered = m.deliveryStatus   === 'مكتمل';
+        const wish = (state.memberWishes||[]).find(w => w.assocId===a.id && parseInt(w.monthNum)===parseInt(m.monthNum));
+        const wishShares = wish ? parseFloat(wish.sharesCount) : 0;
+        const monthlyVal = myShares * shareVal;
+        const deliveryVal = wishShares * shareVal * dur;
+
+        return `
+        <div class="month-row-item">
+          <div class="month-row-num" style="${isNow?'background:var(--accent);':''}${isPast&&!isNow?'opacity:0.5;':''}">${m.monthNum}</div>
+          <div class="month-row-info">
+            <div class="month-row-shares">${myShares} سهم — قيمة الشهر: ${Number(monthlyVal).toLocaleString('ar')} ﷼</div>
+            <div class="month-row-date">📅 ${fmtDate(mDate.toISOString())}${mDaysLeft>0?' — بعد '+mDaysLeft+' يوم':isPast?' — مضى':' — هذا الشهر'}</div>
+            ${wishShares>0 ? `<div style="font-size:12px;color:var(--primary);margin-top:3px;font-weight:600">📤 يُستلم ${wishShares} سهم = ${Number(deliveryVal).toLocaleString('ar')} ﷼</div>` : ''}
+          </div>
+          <div class="month-row-status">
+            <span class="status-pill ${collected?'collected':'uncollected'}">
+              ${collected?'✅ حُصِّل':'⏳ لم يُحصَّل'}
+            </span>
+            ${wishShares>0 ? `<span class="status-pill delivery">${delivered?'✅ سُلِّم':'📤 بانتظار التسليم'}</span>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  if (area && monthsHTML) {
+    area.innerHTML += monthsHTML;
+  }
+}
+
+// ============================================
+// MONTHS
+// ============================================
+async function viewMonths(assocId, fromPage) {
+  state.viewingAssocId = assocId;
+  state.backPage = fromPage;
+  
+  const assoc = state.allAssocs.find(a => a.id === assocId);
+  state.viewingAssocData = assoc;
+  
+  document.getElementById('months-page-title').textContent = 'أشهر جمعية: ' + (assoc ? assoc.name : '');
+  
+  if (assoc) {
+    const totalMonthly = parseFloat(assoc.sharesCount||0) * parseFloat(assoc.shareValue||0);
+    document.getElementById('assoc-info-banner').innerHTML = `
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+        <div style="font-size:20px;font-weight:800">${assoc.name}</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;opacity:0.9">
+          <div>👥 ${assoc.memberCount||0} مشترك</div>
+          <div>📊 ${assoc.sharesCount||0} سهم</div>
+          <div>💰 ${Number(assoc.shareValue).toLocaleString('ar')} ﷼/سهم</div>
+          <div>📅 ${fmtDate(assoc.startDate)} — ${fmtDate(assoc.endDate)}</div>
+          <div style="background:rgba(255,255,255,0.15);border-radius: var(--r-xs);padding:4px 10px">
+            💵 التحصيل الشهري الثابت: <strong>${Number(totalMonthly).toLocaleString('ar')} ﷼</strong>
+          </div>
+        </div>
+      </div>`;
+  }
+  
+  showPage('months');
+  document.getElementById('months-grid').innerHTML = '<div class="loading"><div class="spinner"></div> جاري التحميل...</div>';
+  
+  // جلب الأشهر مع إجماليات التحصيل والتسليم المحسوبة
+  const months = await api({action:'getMonthsWithTotals', assocId});
+  renderMonthsGrid(months || [], assoc);
+}
+
+function renderMonthsGrid(months, assoc) {
+  const grid = document.getElementById('months-grid');
+  if (!months.length) {
+    grid.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:40px;grid-column:1/-1">لا توجد أشهر لهذه الجمعية</div>';
+    return;
+  }
+  
+  grid.innerHTML = months.map(m => {
+    const collDone  = m.collectionStatus === 'مكتمل';
+    const delDone   = m.deliveryStatus === 'مكتمل' || m.deliveryStatus === 'لا يوجد تسليم';
+    const isLocked  = m.closed;
+    const isAdmin   = state.isAdmin;
+    const sv        = assoc ? parseFloat(assoc.shareValue) : 0;
+
+    // بيانات التحصيل من getMonthsWithTotals (بالريال)
+    const fixedShares  = parseFloat(m.fixedShares || m.monthlySharesTotal || 0);
+    const fixedRiyal   = parseFloat(m.fixedRiyal  || m.monthlyValueTotal  || fixedShares * sv);
+    const availRiyal   = parseFloat(m.availRiyal  || fixedRiyal);   // الموجود بالريال
+    const usedRiyal    = parseFloat(m.usedRiyal   || 0);            // قيم التسليم المطلوبة
+    const usedShares_  = parseFloat(m.usedShares  || 0);
+    const remainRiyal  = parseFloat(m.remainRiyal || Math.max(0, availRiyal - usedRiyal));
+    const surplusIn_   = parseFloat(m.surplusIn   || 0);
+    const dur_         = parseInt(m.dur || assoc?.duration || 1);
+
+    const capPct = availRiyal > 0 ? Math.min(100, Math.round(usedRiyal / availRiyal * 100)) : 0;
+
+    return `
+    <div class="month-card" style="${isLocked?'border-top:4px solid var(--success)':'border-top:3px solid var(--border)'}">
+
+      <!-- رأس البطاقة -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div class="month-num" style="${isLocked?'color:var(--success)':''}">${m.monthNum}</div>
+          <div class="month-label">📅 ${m.date}</div>
+        </div>
+        ${isLocked
+          ? `<div style="background:#dcfce7;border-radius: var(--r-sm);padding:8px 14px;text-align:center">
+               <div style="font-size:22px">🔒</div>
+               <div style="font-size:11px;color:var(--success);font-weight:700">مغلق نهائياً</div>
+             </div>`
+          : `<div style="text-align:center;background:var(--bg);border-radius: var(--r-sm);padding:8px 12px">
+               <div style="font-size:10px;color:var(--text-muted)">الموجود للشهر</div>
+               <div style="font-size:14px;font-weight:800;color:var(--primary)">${Number(availRiyal).toLocaleString('ar')} ﷼</div>
+               ${surplusIn_>0?`<div style="font-size:10px;color:var(--warning)">+${Number(surplusIn_).toLocaleString('ar')} فائض</div>`:''}
+             </div>`
+        }
+      </div>
+
+      <!-- إجمالي التحصيل (ثابت) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px">
+        <div style="background:var(--bg);border-radius:9px;padding:9px 10px">
+          <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">💰 التحصيل الشهري الثابت</div>
+          <div style="font-size:14px;font-weight:800;color:var(--primary)">${fixedShares} سهم</div>
+          <div style="font-size:11px;color:var(--text-muted)">${Number(fixedRiyal).toLocaleString('ar')} ﷼</div>
+        </div>
+        <div style="background:var(--bg);border-radius:9px;padding:9px 10px">
+          <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">📤 الموجود للتسليم</div>
+          <div style="font-size:14px;font-weight:800;color:${remainRiyal>0?'var(--success)':'var(--danger)'}">
+            ${Number(availRiyal).toLocaleString('ar')} ﷼
+          </div>
+          <div style="font-size:11px;color:var(--text-muted)">
+            مُخصَّص: ${Number(usedRiyal).toLocaleString('ar')} ﷼ (${usedShares_} سهم) — متبقي: ${Number(remainRiyal).toLocaleString('ar')} ﷼
+          </div>
+        </div>
+      </div>
+
+      <!-- شريط الامتلاء -->
+      <div class="progress-wrap" style="margin-bottom:10px">
+        <div class="progress-label">
+          <span>تخصيص التسليم</span>
+          <span>${capPct}%</span>
+        </div>
+        <div class="progress-bar" style="height:8px">
+          <div class="progress-fill ${capPct>=100?'red':capPct>70?'gold':'green'}" style="width:${capPct}%"></div>
+        </div>
+      </div>
+
+      <!-- حالات -->
+      <div class="month-status" style="margin-bottom:10px">
+        <span class="badge ${collDone?'badge-success':'badge-warning'}">${collDone?'✅':'⏳'} التحصيل</span>
+        <span class="badge ${m.deliveryStatus==='لا يوجد تسليم'?'badge-gray':delDone?'badge-success':'badge-info'}">
+          ${m.deliveryStatus==='لا يوجد تسليم'?'— لا تسليم':delDone?'✅ تسليم':'📤 تسليم'}</span>
+      </div>
+
+      <!-- أزرار: المدير فقط -->
+      ${isAdmin ? `
+      <div class="month-btns">
+        <button class="btn ${isLocked?'btn-outline':'btn-accent'} btn-sm"
+          onclick="openCollectionModal('${state.viewingAssocId}', ${m.monthNum})"
+          ${isLocked?'style="opacity:0.7"':''}>
+          💰 التحصيل${isLocked?' 🔒':''}
+        </button>
+        ${m.deliveryStatus!=='لا يوجد تسليم'?`
+        <button class="btn ${isLocked?'btn-outline':'btn-primary'} btn-sm"
+          onclick="openDeliveryModal('${state.viewingAssocId}', ${m.monthNum})"
+          ${isLocked?'style="opacity:0.7"':''}>
+          📤 التسليم${isLocked?' 🔒':''}
+        </button>`:''}
+        ${isLocked?`
+        <button class="btn btn-warning btn-sm" style="background:#d97706;color:white"
+          onclick="adminReopenMonth('${state.viewingAssocId}', ${m.monthNum})"
+          title="إعادة فتح الشهر">
+          🔓 فتح
+        </button>`:''}
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ============================================
+// COLLECTION MODAL
+// ============================================
+async function openCollectionModal(assocId, monthNum) {
+  document.getElementById('collection-modal-title').textContent = `💰 تحصيل الشهر ${monthNum}`;
+  document.getElementById('collection-table-wrap').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  document.getElementById('collection-totals').innerHTML = '';
+  openModal('modal-collection');
+  
+  // استخدم getCollectionData للحصول على البيانات الحقيقية مع حالة التحصيل
+  const records = await api({action:'getCollectionData', assocId, monthNum: monthNum.toString()});
+  const subs = records || [];
+  
+  if (!subs.length) {
+    document.getElementById('collection-table-wrap').innerHTML = '<div class="table-empty">لا يوجد مشتركون في هذا الشهر</div>';
+    return;
+  }
+  
+  const shareValue = state.viewingAssocData ? parseFloat(state.viewingAssocData.shareValue) : 0;
+  
+  let rows = subs.map(s => ({
+    id: s.id,
+    memberId: s.memberId,
+    // fallback: memberName أو member_name أو memberid
+    memberName: s.memberName || s.member_name || s.name || s.memberId || '—',
+    sharesCount: parseFloat(s.sharesCount || s.shares_count || 0),
+    monthlyValue: parseFloat(s.sharesValue || s.shares_value || (parseFloat(s.sharesCount||0) * shareValue)),
+    collected: s.collected === true || s.collected === 'true' || s.collected === 'TRUE' || s.collected === 1,
+    confirmDate: s.confirmDate || s.confirm_date || ''
+  }));
+  
+  renderCollectionTable(rows, assocId, monthNum, shareValue);
+}
+
+function renderCollectionTable(rows, assocId, monthNum, shareValue) {
+  const totalMonthValue = rows.reduce((s, r) => s + r.monthlyValue, 0);
+  const collectedRows = rows.filter(r => r.collected);
+  const collectedValue = collectedRows.reduce((s, r) => s + r.monthlyValue, 0);
+  const remainingValue = totalMonthValue - collectedValue;
+  const remainingCount = rows.length - collectedRows.length;
+
+  // بطاقات الملخص في أعلى المودال
+  document.getElementById('collection-table-wrap').innerHTML = `
+    <div class="summary-cards" id="coll-summary-cards">
+      <div class="summary-card blue">
+        <div class="summary-card-val blue" id="coll-sc-total">${rows.length}</div>
+        <div class="summary-card-lbl">إجمالي المشتركين</div>
+      </div>
+      <div class="summary-card green">
+        <div class="summary-card-val green" id="coll-sc-done">0</div>
+        <div class="summary-card-lbl">تم تحصيلهم</div>
+      </div>
+      <div class="summary-card red">
+        <div class="summary-card-val red" id="coll-sc-remaining">${rows.length}</div>
+        <div class="summary-card-lbl">المتبقون</div>
+      </div>
+      <div class="summary-card gold">
+        <div class="summary-card-val gold" id="coll-sc-value">${Number(totalMonthValue).toLocaleString('ar')}</div>
+        <div class="summary-card-lbl">إجمالي الشهر (ريال)</div>
+      </div>
+    </div>
+
+    <!-- شريط التقدم -->
+    <div style="margin-bottom:16px">
+      <div class="progress-label">
+        <span>💰 نسبة التحصيل</span>
+        <span id="coll-progress-pct">0%</span>
+      </div>
+      <div class="progress-bar" style="height:12px">
+        <div class="progress-fill green" id="coll-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- بطاقة المتبقي - تنقص عند التحصيل -->
+    <div class="counter-card" id="coll-counter-card">
+      <div>
+        <div class="counter-card-label">💸 المبالغ المتبقية للتحصيل</div>
+        <div class="counter-card-val" id="coll-remaining-val">${Number(totalMonthValue).toLocaleString('ar')} ريال</div>
+        <div class="counter-card-sub" id="coll-remaining-sub">${rows.length} عضو لم يُحصّل بعد</div>
+      </div>
+      <div class="counter-card-right">
+        <div class="ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle class="counter-ring-bg" cx="40" cy="40" r="34"/>
+            <circle class="counter-ring-fill" id="coll-ring" cx="40" cy="40" r="34"
+              stroke-dasharray="${2*Math.PI*34}"
+              stroke-dashoffset="${2*Math.PI*34}"/>
+          </svg>
+          <div class="counter-ring-text">
+            <span id="coll-ring-pct" style="color:var(--accent-light)">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>اسم العضو</th><th>عدد الأسهم</th><th>القيمة الشهرية</th><th>تأكيد التحصيل</th><th>تاريخ التأكيد</th>
+        </tr></thead>
+        <tbody id="collection-tbody">
+          ${rows.map((r, i) => `<tr id="coll-row-${i}">
+            <td>${i+1}</td>
+            <td><strong>${r.memberName}</strong></td>
+            <td>${r.sharesCount} سهم</td>
+            <td>${Number(r.monthlyValue).toLocaleString('ar')} ريال</td>
+            <td>
+              <label class="check-wrap">
+                <input type="checkbox" id="coll-check-${i}"
+                  data-shares="${r.sharesCount}" data-value="${r.monthlyValue}"
+                  ${r.collected?'checked':''}
+                  onchange="toggleCollection(${i}, this.checked, '${r.id}', ${rows.length}, ${totalMonthValue})">
+                <span id="coll-lbl-${i}" style="color:${r.collected?'var(--success)':'var(--text-muted)'}">${r.collected ? '✅ تم' : 'في الانتظار'}</span>
+              </label>
+            </td>
+            <td id="coll-date-${i}">${r.confirmDate || '—'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  // تهيئة العدادات بالحالة الحقيقية
+  setTimeout(() => updateCollectionCounters(rows.length, totalMonthValue), 50);
+}
+
+function toggleCollection(idx, checked, id, totalRows, totalMonthValue) {
+  const dateEl = document.getElementById('coll-date-' + idx);
+  const lblEl  = document.getElementById('coll-lbl-' + idx);
+  const now = new Date().toLocaleDateString('ar-SA');
+  dateEl.textContent = checked ? now : '—';
+  if (lblEl) {
+    lblEl.textContent = checked ? '✅ تم' : 'في الانتظار';
+    lblEl.style.color = checked ? 'var(--success)' : 'var(--text-muted)';
+  }
+  
+  api({action:'confirmCollection', id, collected: checked,
+       assocId: state.viewingAssocId,
+       monthNum: document.getElementById('collection-modal-title').textContent.replace(/\D/g,'')
+  }).then(() => {
+    if (state.viewingAssocId) viewMonths(state.viewingAssocId, state.backPage || 'admin');
+  });
+  updateCollectionCounters(totalRows, totalMonthValue);
+}
+
+function updateCollectionCounters(totalRows, totalMonthValue) {
+  const checkboxes = document.querySelectorAll('[id^="coll-check-"]');
+  let doneCount = 0, doneValue = 0;
+  
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      doneCount++;
+      doneValue += parseFloat(cb.dataset.value || 0);
+    }
+  });
+  
+  const remaining = totalRows - doneCount;
+  const remainingVal = totalMonthValue - doneValue;
+  const pct = totalRows > 0 ? Math.round(doneCount / totalRows * 100) : 0;
+  const circumference = 2 * Math.PI * 34;
+  const offset = circumference - (pct / 100) * circumference;
+  
+  // تحديث بطاقات الملخص
+  const el = id => document.getElementById(id);
+  if (el('coll-sc-done'))      el('coll-sc-done').textContent = doneCount;
+  if (el('coll-sc-remaining')) el('coll-sc-remaining').textContent = remaining;
+  if (el('coll-progress-bar')) el('coll-progress-bar').style.width = pct + '%';
+  if (el('coll-progress-pct')) el('coll-progress-pct').textContent = pct + '%';
+  
+  // تحديث العداد المتناقص مع تأثير حركي
+  const valEl = el('coll-remaining-val');
+  const subEl = el('coll-remaining-sub');
+  const ring  = el('coll-ring');
+  const ringPct = el('coll-ring-pct');
+  
+  if (valEl) {
+    valEl.style.transform = 'scale(1.08)';
+    valEl.textContent = Number(remainingVal).toLocaleString('ar') + ' ريال';
+    setTimeout(() => valEl.style.transform = 'scale(1)', 300);
+  }
+  if (subEl) subEl.textContent = `${remaining} عضو ${remaining > 0 ? 'لم يُحصّل بعد' : '— اكتمل التحصيل! 🎉'}`;
+  if (ring)  ring.style.strokeDashoffset = offset;
+  if (ringPct) ringPct.textContent = pct + '%';
+  
+  // تغيير لون العداد عند الاكتمال
+  const counterCard = el('coll-counter-card');
+  if (counterCard) {
+    counterCard.style.background = pct === 100
+      ? 'linear-gradient(135deg, #15803d 0%, #16a34a 100%)'
+      : 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)';
+  }
+}
+
+function updateCollectionTotals(rows, shareValue) {} // kept for compat
+function updateCollectionTotalsFromDOM() {} // kept for compat
+
+// ============================================
+// DELIVERY MODAL
+// ============================================
+async function openDeliveryModal(assocId, monthNum) {
+  document.getElementById('delivery-modal-title').textContent = `📤 تسليم الشهر ${monthNum}`;
+  document.getElementById('delivery-table-wrap').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  document.getElementById('delivery-totals').innerHTML = '';
+  openModal('modal-delivery');
+  
+  // جلب بيانات التسليم الحقيقية (مع حالة تم التسليم)
+  const [delData, allSubs] = await Promise.all([
+    api({action:'getDeliveryData', assocId, monthNum: monthNum.toString()}),
+    api({action:'getSubscriptions', assocId})
+  ]);
+  state.allSubs = allSubs || [];
+  const wishList = delData || [];
+  
+  if (!wishList.length) {
+    document.getElementById('delivery-table-wrap').innerHTML = '<div class="table-empty">لا توجد رغبات استلام لهذا الشهر</div>';
+    document.getElementById('delivery-totals').innerHTML = '';
+    return;
+  }
+  
+  const assoc = state.viewingAssocData;
+  const shareValue = assoc ? parseFloat(assoc.shareValue) : 0;
+  const duration   = assoc ? parseInt(assoc.duration) : 1;
+  
+  const totalDeliveryValue  = wishList.reduce((s, w) => s + parseFloat(w.deliveryValue||0), 0);
+  const totalDeliveryShares = wishList.reduce((s, w) => s + parseFloat(w.sharesCount||0), 0);
+  const circumference = 2 * Math.PI * 34;
+  
+  document.getElementById('delivery-table-wrap').innerHTML = `
+    <div class="summary-cards">
+      <div class="summary-card blue">
+        <div class="summary-card-val blue">${wishList.length}</div>
+        <div class="summary-card-lbl">عدد المستلمين</div>
+      </div>
+      <div class="summary-card gold">
+        <div class="summary-card-val gold">${totalDeliveryShares}</div>
+        <div class="summary-card-lbl">إجمالي الأسهم</div>
+      </div>
+      <div class="summary-card green">
+        <div class="summary-card-val green" id="del-sc-done">0</div>
+        <div class="summary-card-lbl">تم تسليمهم</div>
+      </div>
+      <div class="summary-card red">
+        <div class="summary-card-val red" id="del-sc-remaining">${wishList.length}</div>
+        <div class="summary-card-lbl">لم يُسلَّم لهم</div>
+      </div>
+    </div>
+
+    <!-- شريط تقدم التسليم -->
+    <div style="margin-bottom:16px">
+      <div class="progress-label">
+        <span>📤 نسبة التسليم</span>
+        <span id="del-progress-pct">0%</span>
+      </div>
+      <div class="progress-bar" style="height:12px">
+        <div class="progress-fill purple" id="del-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- بطاقة الإجمالي المتبقي - تنقص عند كل تسليم -->
+    <div class="counter-card" id="del-counter-card">
+      <div style="flex:1">
+        <div class="counter-card-label">📤 إجمالي المبالغ المتبقية للتسليم</div>
+        <div class="counter-card-val" id="del-remaining-val">${Number(totalDeliveryValue).toLocaleString('ar')} ريال</div>
+        <div class="counter-card-sub" id="del-remaining-sub">${wishList.length} عضو بانتظار الاستلام</div>
+      </div>
+      <div class="counter-card-right">
+        <div class="ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle class="counter-ring-bg" cx="40" cy="40" r="34"/>
+            <circle class="counter-ring-fill" id="del-ring" cx="40" cy="40" r="34"
+              stroke-dasharray="${circumference}"
+              stroke-dashoffset="${circumference}"/>
+          </svg>
+          <div class="counter-ring-text">
+            <span id="del-ring-pct" style="color:var(--accent-light)">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>اسم العضو</th><th>إجمالي أسهمه</th><th>أسهم الاستلام</th><th>قيمة التسليم</th><th>تأكيد التسليم</th><th>التاريخ</th>
+        </tr></thead>
+        <tbody>
+          ${wishList.map((w, i) => {
+            const sub = (state.allSubs||[]).find(s => s.memberId === w.memberId && s.assocId === assocId);
+            const memberTotalShares = sub ? sub.sharesCount : w.sharesCount;
+            const deliveryValue = parseFloat(w.deliveryValue || 0);
+            const isDone = w.delivered === true || w.delivered === 'true' || w.delivered === 'TRUE';
+            
+            return `<tr id="del-row-${i}">
+              <td>${i+1}</td>
+              <td><strong>${w.memberName}</strong></td>
+              <td>${memberTotalShares} سهم</td>
+              <td>${w.sharesCount} سهم</td>
+              <td>${Number(deliveryValue).toLocaleString('ar')} ريال</td>
+              <td>
+                <label class="check-wrap">
+                  <input type="checkbox" id="del-check-${i}"
+                    data-value="${deliveryValue}"
+                    ${isDone?'checked':''}
+                    onchange="toggleDelivery(${i}, this.checked, '${w.id}', ${wishList.length}, ${totalDeliveryValue})">
+                  <span id="del-lbl-${i}" style="color:${isDone?'var(--success)':'var(--text-muted)'}">
+                    ${isDone?'✅ تم':'تأكيد'}
+                  </span>
+                </label>
+              </td>
+              <td id="del-date-${i}">${w.confirmDate||'—'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  // تهيئة العدادات بالحالة الحقيقية
+  setTimeout(() => updateDeliveryCounters(wishList.length, totalDeliveryValue), 50);
+}
+
+function renderDeliveryTotals(wishes, shareValue, duration) {} // kept for compat
+
+function toggleDelivery(idx, checked, deliveryId, totalRows, totalDeliveryValue) {
+  const dateEl = document.getElementById('del-date-' + idx);
+  const lblEl  = document.getElementById('del-lbl-' + idx);
+  dateEl.textContent = checked ? new Date().toLocaleDateString('ar-SA') : '—';
+  if (lblEl) {
+    lblEl.textContent = checked ? '✅ تم' : 'تأكيد';
+    lblEl.style.color = checked ? 'var(--success)' : 'var(--text-muted)';
+  }
+  api({action:'confirmDelivery', id: deliveryId, delivered: checked,
+       assocId: state.viewingAssocId,
+       monthNum: document.getElementById('delivery-modal-title').textContent.replace(/\D/g,'')
+  }).then(() => {
+    if (state.viewingAssocId) viewMonths(state.viewingAssocId, state.backPage || 'admin');
+  });
+  updateDeliveryCounters(totalRows, totalDeliveryValue);
+}
+
+function updateDeliveryCounters(totalRows, totalDeliveryValue) {
+  const checkboxes = document.querySelectorAll('[id^="del-check-"]');
+  let doneCount = 0, doneValue = 0;
+  
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      doneCount++;
+      doneValue += parseFloat(cb.dataset.value || 0);
+    }
+  });
+  
+  const remaining = totalRows - doneCount;
+  const remainingVal = totalDeliveryValue - doneValue;
+  const pct = totalRows > 0 ? Math.round(doneCount / totalRows * 100) : 0;
+  const circumference = 2 * Math.PI * 34;
+  const offset = circumference - (pct / 100) * circumference;
+  
+  const el = id => document.getElementById(id);
+  if (el('del-sc-done'))      el('del-sc-done').textContent = doneCount;
+  if (el('del-sc-remaining')) el('del-sc-remaining').textContent = remaining;
+  if (el('del-progress-bar')) el('del-progress-bar').style.width = pct + '%';
+  if (el('del-progress-pct')) el('del-progress-pct').textContent = pct + '%';
+  
+  const valEl = el('del-remaining-val');
+  const subEl = el('del-remaining-sub');
+  const ring  = el('del-ring');
+  const ringPct = el('del-ring-pct');
+  
+  if (valEl) {
+    valEl.style.transform = 'scale(1.08)';
+    valEl.textContent = Number(remainingVal).toLocaleString('ar') + ' ريال';
+    setTimeout(() => valEl.style.transform = 'scale(1)', 300);
+  }
+  if (subEl) subEl.textContent = remaining > 0 ? `${remaining} عضو بانتظار الاستلام` : '🎉 اكتمل التسليم!';
+  if (ring)  ring.style.strokeDashoffset = offset;
+  if (ringPct) ringPct.textContent = pct + '%';
+  
+  const counterCard = el('del-counter-card');
+  if (counterCard) {
+    counterCard.style.background = pct === 100
+      ? 'linear-gradient(135deg, #15803d 0%, #16a34a 100%)'
+      : 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)';
+  }
+}
+
+// ============================================
+// WISHES
+// ============================================
+async function viewWishes(assocId) {
+  state.viewingAssocId = assocId;
+  state.backPage = 'member';
+  showPage('wishes');
+  
+  const assoc = state.allAssocs.find(a => a.id === assocId);
+  state.viewingAssocData = assoc;
+  
+  const content = document.getElementById('wishes-content');
+  content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  
+  if (!assoc) return;
+  
+  const [subs, wishes, months] = await Promise.all([
+    api({action:'getSubscriptions', assocId, memberId: state.user.id}),
+    api({action:'getWishes', assocId, memberId: state.user.id}),
+    api({action:'getMonthsWithTotals', assocId})
+  ]);
+  
+  const sub = (subs || [])[0];
+  if (!sub) {
+    content.innerHTML = '<div class="card">غير مشترك في هذه الجمعية</div>';
+    return;
+  }
+  
+  const myWishes = wishes || [];
+  const monthList = months || [];
+  const totalWished = myWishes.reduce((s, w) => s + parseFloat(w.sharesCount||0), 0);
+  const remaining = parseFloat(sub.sharesCount) - totalWished;
+  
+  // صلاحية التعديل: الجمعية الجديدة فقط للعضو، المدير دائماً
+  const memberCanEdit = assoc.status === 'جديدة' || state.isAdmin;
+
+  content.innerHTML = `
+    <!-- بطاقة الملخص -->
+    <div class="card" style="margin-bottom:16px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:none">
+      <div style="font-size:20px;font-weight:800;margin-bottom:8px">${assoc.name}
+        <span class="badge ${assoc.status==='نشطة'?'badge-success':assoc.status==='منتهية'?'badge-gray':'badge-info'}" style="font-size:12px;margin-right:8px">${assoc.status}</span>
+      </div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:14px;opacity:0.9">
+        <div>📊 إجمالي أسهمي: <strong>${sub.sharesCount}</strong></div>
+        <div>🎯 موزعة: <strong>${totalWished}</strong></div>
+        <div style="color:${remaining>0?'#86efac':'#fca5a5'}">✦ متبقية: <strong>${remaining.toFixed(1)}</strong></div>
+      </div>
+      <div class="progress-wrap" style="margin-top:10px">
+        <div class="progress-label" style="color:rgba(255,255,255,0.7)">
+          <span>نسبة توزيع رغباتك</span>
+          <span>${sub.sharesCount>0?Math.round(totalWished/sub.sharesCount*100):0}%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill gold" style="width:${sub.sharesCount>0?Math.min(100,Math.round(totalWished/sub.sharesCount*100)):0}%"></div></div>
+      </div>
+    </div>
+
+    ${assoc.status==='نشطة'&&!state.isAdmin ? `
+    <div style="background:#fefce8;border:1px solid #fde68a;border-radius: var(--r-sm);padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center">
+      <span style="font-size:20px">🔒</span>
+      <div>
+        <div style="font-weight:700;color:#92400e">الجمعية نشطة — رغباتك نهائية</div>
+        <div style="font-size:12px;color:#92400e;margin-top:2px">لا يمكن تعديل الرغبات في الجمعية النشطة. إذا احتجت تعديل تواصل مع المدير</div>
+      </div>
+    </div>` : assoc.status==='منتهية' ? `
+    <div style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius: var(--r-sm);padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center">
+      <span style="font-size:20px">🏁</span>
+      <div style="font-weight:700;color:var(--text-muted)">الجمعية منتهية — عرض فقط</div>
+    </div>` : ''}
+
+    <div class="section-title" style="margin-bottom:16px">
+      ${memberCanEdit ? 'اختر الشهر وحدد أسهم الاستلام' : 'رغباتك المسجّلة'}
+    </div>
+    <div class="wish-grid">
+      ${monthList.map(m => {
+        const wish       = myWishes.find(w => w.monthNum == m.monthNum);
+        const wishShares = wish ? parseFloat(wish.sharesCount) : 0;
+        const hasWish    = wishShares > 0;
+        const isLocked   = m.closed;
+
+        // سعة الشهر بالريال
+        const sv_      = assoc ? parseFloat(assoc.shareValue) : 1;
+        const dur_m    = assoc ? parseInt(assoc.duration) : 1;
+        const availR_  = parseFloat(m.availRiyal || m.fixedRiyal || 0);
+        const usedR_   = parseFloat(m.usedRiyal  || 0);
+        const myExistR_      = wishShares * sv_ * dur_m;
+        const usedByOthersR_ = usedR_ - myExistR_;
+        const myAvailR_      = Math.max(0, availR_ - usedByOthersR_);
+        const perShare_      = sv_ * dur_m;
+
+        // أسهم العضو المتبقية (الكلية - ما وُزِّع في أشهر أخرى غير هذا الشهر)
+        const wishedOtherMonths = myWishes
+          .filter(w => w.monthNum != m.monthNum)
+          .reduce((s, w) => s + parseFloat(w.sharesCount||0), 0);
+        const mySharesLeft = Math.max(0, parseFloat(sub.sharesCount) - wishedOtherMonths);
+        // الحد الأقصى = أقل: (أسهمي المتبقية) أو (المتاح في الشهر بالأسهم)
+        const maxByCapacity = perShare_ > 0 ? Math.floor(myAvailR_ / perShare_ * 2) / 2 : mySharesLeft;
+        const myMaxShares   = Math.min(mySharesLeft, maxByCapacity);
+        const isFull        = myMaxShares <= 0 && !hasWish;
+        const capPct        = availR_ > 0 ? Math.min(100, Math.round(usedR_ / availR_ * 100)) : 0;
+        const remainR_      = Math.max(0, availR_ - usedR_);
+
+        // لون عداد الأسهم المتبقية
+        const sharesLeftColor = mySharesLeft === 0 ? 'var(--success)' :
+                                mySharesLeft < parseFloat(sub.sharesCount) * 0.3 ? 'var(--warning)' :
+                                'var(--text-muted)';
+
+        const cardClass = isLocked ? 'full' : isFull ? 'full' : hasWish ? 'selected' : '';
+        const clickable = !isLocked && !isFull && memberCanEdit;
+
+        return `
+        <div class="wish-month-card ${cardClass}"
+          ${clickable?`onclick="openWishModal('${assocId}', ${m.monthNum}, ${sub.sharesCount}, ${totalWished}, '${sub.memberName||state.user.name}', ${wishShares}, ${availR_}, ${usedByOthersR_})"`:''}>
+          <div class="wish-month-num">${m.monthNum}</div>
+          <div style="font-size:11px;color:var(--text-muted)">📅 ${m.date}</div>
+          <div class="wish-month-shares">
+            ${isLocked ? '🔒 مغلق' : isFull ? '⛔ ممتلئ' : hasWish ? wishShares+' سهم ✅' : 'لم تحدد بعد'}
+          </div>
+          ${!isLocked ? `
+          <div style="margin-top:7px;border-top:1px solid var(--border);padding-top:7px">
+            <!-- أسهمي المتبقية لهذا الشهر -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:10px;color:var(--text-muted)">أسهمي المتبقية</span>
+              <span style="font-size:12px;font-weight:700;color:${sharesLeftColor}">
+                ${mySharesLeft === 0 ? '✅ 0' : mySharesLeft.toFixed(1)} سهم
+              </span>
+            </div>
+            <!-- الموجود بالريال -->
+            <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">
+              الموجود: ${Number(availR_).toLocaleString('ar')} ﷼ — متبقي: ${Number(remainR_).toLocaleString('ar')} ﷼
+            </div>
+            <div class="progress-bar" style="height:4px">
+              <div class="progress-fill ${capPct>=100?'red':capPct>70?'gold':'green'}" style="width:${capPct}%"></div>
+            </div>
+          </div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function openWishModal(assocId, monthNum, totalShares, totalWished, memberName, currentWish, availShares, usedByOthers) {
+  const assoc = state.viewingAssocData;
+  const sv    = assoc ? parseFloat(assoc.shareValue) : 1;
+  const dur   = assoc ? parseInt(assoc.duration)     : 1;
+  
+  // أسهم العضو المتبقية (الكلية - ما وُزِّع في أشهر أخرى)
+  const myRemainingShares = parseFloat(totalShares) - (parseFloat(totalWished) - parseFloat(currentWish || 0));
+  // availShares = الموجود للشهر بالريال
+  // usedByOthers = ما خصصه الآخرون بالريال
+  const availRiyalForMonth = parseFloat(availShares || 0);
+  const usedByOthersRiyal  = parseFloat(usedByOthers || 0);
+  const myAvailRiyal_      = Math.max(0, availRiyalForMonth - usedByOthersRiyal);
+  // قيمة تسليم السهم الواحد
+  const delValuePerShare = sv * dur;
+  // الحد الأقصى بالأسهم = المتاح بالريال ÷ قيمة التسليم للسهم
+  const maxByRiyal  = delValuePerShare > 0 ? Math.floor(myAvailRiyal_ / delValuePerShare * 2) / 2 : myRemainingShares;
+  const maxAllowed  = Math.min(myRemainingShares, maxByRiyal);
+
+  document.getElementById('wish-modal-title').textContent = `🎯 رغبة الشهر ${monthNum}`;
+  document.getElementById('wish-modal-content').innerHTML = `
+    <!-- الشروط الثلاثة -->
+    <div style="background:var(--bg);border-radius: var(--r-sm);padding:14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px">📋 الشروط</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+
+        <!-- شرط 1 -->
+        <div style="background:var(--card);border-radius: var(--r-sm);padding:10px 12px;border-right:3px solid ${myAvailRiyal_>0?'var(--success)':'var(--danger)'}">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">① إجمالي التسليم في الشهر ≤ الموجود بالريال</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span style="font-size:13px;font-weight:800;color:var(--primary)">الموجود: ${Number(availRiyalForMonth).toLocaleString('ar')} ﷼</span>
+              <span style="font-size:11px;color:var(--text-muted);display:block;margin-top:2px">مأخوذ: ${Number(usedByOthersRiyal).toLocaleString('ar')} ﷼ — متاح لك: <strong>${Number(myAvailRiyal_).toLocaleString('ar')} ﷼ (${maxByRiyal.toFixed(1)} سهم)</strong></span>
+            </div>
+            <span style="font-size:16px">${myAvailRiyal_>0?'✅':'⛔'}</span>
+          </div>
+        </div>
+
+        <!-- شرط 2 -->
+        <div style="background:var(--card);border-radius: var(--r-sm);padding:10px 12px;border-right:3px solid ${myRemainingShares>0?'var(--success)':'var(--warning)'}">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">② إجمالي أسهمك = إجمالي رغباتك عبر كل الأشهر</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span style="font-size:14px;font-weight:800;color:var(--primary)">${totalShares} سهم كلي</span>
+              <span style="font-size:12px;color:var(--text-muted);margin-right:8px">(موزع: ${(parseFloat(totalWished)-parseFloat(currentWish||0)).toFixed(1)} — متبقي لك: <strong>${myRemainingShares.toFixed(1)}</strong>)</span>
+            </div>
+            <span style="font-size:16px">${myRemainingShares>0?'⏳':myRemainingShares===0?'✅':'⛔'}</span>
+          </div>
+        </div>
+
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-muted)">
+        💡 قيمة التسليم للسهم: <strong>${Number(delValuePerShare).toLocaleString('ar')} ﷼</strong> (${Number(sv).toLocaleString('ar')} × ${dur} شهر)
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">عدد الأسهم المراد استلامها (0.5 كحد أدنى)</label>
+      <input type="number" id="wish-shares-input" class="form-control"
+        min="0" max="${maxAllowed}" step="0.5" value="${currentWish||''}" placeholder="0">
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">
+        الحد الأقصى: <strong>${maxAllowed.toFixed(1)}</strong> سهم
+      </div>
+    </div>
+    <div id="wish-preview" style="background:var(--bg);border-radius: var(--r-sm);padding:14px;margin-bottom:16px">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">قيمة التسليم (أسهم × قيمة × مدة)</div>
+      <div id="wish-preview-val" style="font-size:22px;font-weight:800;color:var(--primary)">0 ريال</div>
+    </div>
+    <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center"
+      onclick="saveWishFrontend('${assocId}', ${monthNum}, '${memberName}', ${maxAllowed})">
+      ✅ حفظ الرغبة
+    </button>`;
+  
+  document.getElementById('wish-shares-input').oninput = function() {
+    const v = parseFloat(this.value) || 0;
+    const valRiyal = v * delValuePerShare;
+    document.getElementById('wish-preview-val').textContent = Number(valRiyal).toLocaleString('ar') + ' ريال';
+    
+    // تحذير مباشر إذا تجاوز المتاح
+    const old = document.getElementById('wish-error-box');
+    if (old) old.remove();
+    
+    if (v > 0 && valRiyal > availRiyalForMonth) {
+      showWishError(`قيمة الطلب (${Number(valRiyal).toLocaleString('ar')} ريال) أكبر من الموجود في هذا الشهر (${Number(availRiyalForMonth).toLocaleString('ar')} ريال)\nأقصى أسهم ممكنة: ${maxByRiyal.toFixed(1)} سهم`);
+    } else if (v > 0 && valRiyal > myAvailRiyal_) {
+      showWishError(`المتاح لك في هذا الشهر: ${Number(myAvailRiyal_).toLocaleString('ar')} ريال فقط (${maxAllowed.toFixed(1)} سهم)`);
+    }
+  };
+  document.getElementById('wish-shares-input').dispatchEvent(new Event('input'));
+  openModal('modal-wish');
+}
+
+async function saveWishFrontend(assocId, monthNum, memberName, maxAllowed) {
+  const sharesInput = parseFloat(document.getElementById('wish-shares-input').value) || 0;
+  
+  // تحقق محلي بسيط
+  if (sharesInput > 0 && sharesInput < 0.5) {
+    showWishError('أقل قيمة مقبولة هي 0.5 سهم');
+    return;
+  }
+  if (sharesInput === 0) {
+    showWishError('أدخل عدد الأسهم');
+    return;
+  }
+
+  // أرسل للـ Backend — هو المرجع النهائي
+  const btn = document.querySelector('#wish-modal-content button.btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ جاري الحفظ...'; }
+
+  const res = await api({
+    action: 'saveWish',
+    assocId,
+    memberId: state.user.id,
+    memberName: memberName || state.user.name,
+    monthNum: monthNum.toString(),
+    sharesCount: sharesInput,
+    isAdmin: 'false'
+  });
+
+  if (btn) { btn.disabled = false; btn.innerHTML = '✅ حفظ الرغبة'; }
+
+  if (res.error) {
+    // أظهر الخطأ داخل المودال بوضوح
+    showWishError(res.error);
+    return;
+  }
+
+  toast('تم حفظ رغبتك بنجاح ✅', 'success');
+  closeModal('modal-wish');
+  viewWishes(assocId);
+}
+
+function showWishError(msg) {
+  // أزل خطأ سابق
+  const old = document.getElementById('wish-error-box');
+  if (old) old.remove();
+  // أنشئ صندوق الخطأ
+  const box = document.createElement('div');
+  box.id = 'wish-error-box';
+  box.style.cssText = `
+    background:#fee2e2;border:1px solid #fca5a5;border-radius: var(--r-sm);
+    padding:12px 16px;margin-bottom:12px;font-size:13px;color:#991b1b;
+    font-weight:600;line-height:1.6;white-space:pre-line;
+  `;
+  box.innerHTML = '⛔ ' + msg.replace(/\n/g,'<br>');
+  // أدرجه قبل الزر
+  const btn = document.querySelector('#wish-modal-content .btn-primary');
+  if (btn) btn.parentNode.insertBefore(box, btn);
+  // اجعله مرئياً
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// saveWish moved to saveWishFrontend above
+
+
+// ============================================
+// ADMIN ACTIONS
+// ============================================
+function openAddMemberModal() {
+  document.getElementById('add-member-name').value = '';
+  document.getElementById('add-member-phone').value = '';
+  openModal('modal-add-member');
+}
+
+async function addMember() {
+  const name = document.getElementById('add-member-name').value.trim();
+  const phone = document.getElementById('add-member-phone').value.trim();
+  if (!name || !phone) return toast('يرجى تعبئة جميع الحقول', 'error');
+  
+  const res = await api({action:'addMember', name, phone});
+  if (res.error) return toast(res.error, 'error');
+  
+  toast('تم إضافة العضو بنجاح', 'success');
+  closeModal('modal-add-member');
+  loadAdminDashboard();
+}
+
+async function deleteMember(id, name) {
+  if (!confirm(`هل تريد حذف العضو "${name}"؟`)) return;
+  const res = await api({action:'deleteMember', id});
+  if (res.error) return toast(res.error, 'error');
+  toast('تم حذف العضو', 'success');
+  loadAdminDashboard();
+}
+
+function openAddAssocModal() {
+  document.getElementById('assoc-name').value = '';
+  document.getElementById('assoc-start').value = new Date().toISOString().split('T')[0];
+  document.getElementById('assoc-duration').value = state.defaultDuration;
+  document.getElementById('assoc-share-value').value = '';
+  openModal('modal-add-assoc');
+}
+
+async function addAssociation() {
+  const name = document.getElementById('assoc-name').value.trim();
+  const startDate = document.getElementById('assoc-start').value;
+  const duration = document.getElementById('assoc-duration').value;
+  const shareValue = document.getElementById('assoc-share-value').value;
+  
+  if (!name || !startDate || !duration || !shareValue) return toast('يرجى تعبئة جميع الحقول', 'error');
+  
+  const res = await api({action:'addAssociation', name, startDate, duration, shareValue});
+  if (res.error) return toast(res.error, 'error');
+  
+  toast('تم إنشاء الجمعية بنجاح', 'success');
+  closeModal('modal-add-assoc');
+  loadAdminDashboard();
+}
+
+async function deleteAssociation(id, name) {
+  if (!confirm(`هل تريد حذف جمعية "${name}"؟`)) return;
+  const res = await api({action:'deleteAssociation', id});
+  if (res.error) return toast(res.error, 'error');
+  toast('تم حذف الجمعية', 'success');
+  loadAdminDashboard();
+}
+
+function openAddSubModal() {
+  // Populate selects
+  const assocSel = document.getElementById('sub-assoc-id');
+  const memSel = document.getElementById('sub-member-id');
+  
+  assocSel.innerHTML = state.allAssocs.map(a => `<option value="${a.id}" data-share="${a.shareValue}" data-dur="${a.duration}">${a.name}</option>`).join('');
+  memSel.innerHTML = state.allMembers.map(m => `<option value="${m.id}" data-name="${m.name}">${m.name}</option>`).join('');
+  
+  document.getElementById('sub-shares').value = '';
+  document.getElementById('sub-preview').style.display = 'none';
+  
+  // Preview on change
+  const updatePreview = () => {
+    const shares = parseFloat(document.getElementById('sub-shares').value) || 0;
+    const selOpt = assocSel.options[assocSel.selectedIndex];
+    const shareVal = parseFloat(selOpt?.dataset.share || 0);
+    const dur = parseInt(selOpt?.dataset.dur || 1);
+    if (shares > 0) {
+      document.getElementById('sub-preview').style.display = 'block';
+      document.getElementById('sub-preview-content').innerHTML = `
+        قيمة الاشتراك الإجمالية: <strong>${Number(shares * shareVal * dur).toLocaleString('ar')} ريال</strong><br>
+        (${shares} سهم × ${shareVal} ريال × ${dur} شهر)`;
+    }
+  };
+  document.getElementById('sub-shares').oninput = updatePreview;
+  assocSel.onchange = updatePreview;
+  
+  openModal('modal-add-sub');
+}
+
+async function addSubscription() {
+  const assocId = document.getElementById('sub-assoc-id').value;
+  const memberId = document.getElementById('sub-member-id').value;
+  const sharesCount = document.getElementById('sub-shares').value;
+  const memSel = document.getElementById('sub-member-id');
+  const memberName = memSel.options[memSel.selectedIndex]?.dataset.name || '';
+  
+  if (!assocId || !memberId || !sharesCount) return toast('يرجى تعبئة جميع الحقول', 'error');
+  
+  const res = await api({action:'addSubscription', assocId, memberId, memberName, sharesCount});
+  if (res.error) return toast(res.error, 'error');
+  
+  toast('تم إضافة الاشتراك بنجاح', 'success');
+  closeModal('modal-add-sub');
+  loadAdminDashboard();
+}
+
+async function deleteSubscription(id) {
+  if (!confirm('هل تريد حذف هذا الاشتراك؟')) return;
+  const res = await api({action:'deleteSubscription', id});
+  if (res.error) return toast(res.error, 'error');
+  toast('تم حذف الاشتراك', 'success');
+  loadAdminDashboard();
+}
+
+// Member join association
+async function openJoinAssocModal() {
+  const content = document.getElementById('available-assocs-list');
+  const mySubs = await api({action:'getSubscriptions', memberId: state.user.id});
+  const myAssocIds = (mySubs||[]).map(s => s.assocId);
+  const available = state.allAssocs.filter(a => !myAssocIds.includes(a.id) && a.status !== 'منتهية');
+  
+  if (!available.length) {
+    content.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px">لا توجد جمعيات متاحة للاشتراك</div>';
+  } else {
+    content.innerHTML = available.map(a => `
+      <div style="border:1px solid var(--border);border-radius: var(--r-sm);padding:16px;margin-bottom:12px">
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px">${a.name}</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px">قيمة السهم: ${Number(a.shareValue).toLocaleString('ar')} ريال | المدة: ${a.duration} شهر</div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">عدد الأسهم</label>
+          <input type="number" id="join-shares-${a.id}" class="form-control" min="0.5" step="0.5" placeholder="1">
+        </div>
+        <button class="btn btn-primary" onclick="joinAssociation('${a.id}', '${a.name}')">✅ اشتراك</button>
+      </div>`).join('');
+  }
+  openModal('modal-join-assoc');
+}
+
+async function joinAssociation(assocId, assocName) {
+  const sharesCount = document.getElementById('join-shares-' + assocId)?.value;
+  if (!sharesCount) return toast('أدخل عدد الأسهم', 'error');
+  
+  const res = await api({action:'addSubscription', assocId, memberId: state.user.id, memberName: state.user.name, sharesCount});
+  if (res.error) return toast(res.error, 'error');
+  
+  toast('تم الاشتراك في ' + assocName + ' بنجاح', 'success');
+  closeModal('modal-join-assoc');
+  loadMemberDashboard();
+}
+
+async function saveSettings() {
+  const adminCode = document.getElementById('settings-admin-code').value.trim();
+  const defaultDuration = document.getElementById('settings-duration').value;
+  const adminPhone = document.getElementById('settings-admin-phone').value.trim();
+  
+  if (!adminCode) return toast('رمز المدير مطلوب', 'error');
+  
+  const res = await api({action:'updateSettings', adminCode, defaultDuration, adminPhone});
+  if (res && !res.error) {
+    state.adminPhone = adminPhone;
+    // تحديث بيانات المدير كعضو
+    if (adminPhone) {
+      const memberData = await api({action:'loginMember', phone: adminPhone});
+      if (!memberData.error) {
+        state.adminMember = memberData;
+        toast('✅ تم الحفظ — رقم المدير: ' + memberData.name, 'success');
+      } else {
+        toast('⚠️ تم حفظ الإعدادات لكن رقم الجوال غير موجود في الأعضاء', 'warning');
+      }
+    } else {
+      toast('تم حفظ الإعدادات', 'success');
+    }
+    buildNav();
+  }
+}
+
+// Read-only views for members
+async function openCollectionViewModal(assocId, monthNum) {
+  openCollectionModal(assocId, monthNum);
+  // Disable checkboxes after render
+  setTimeout(() => {
+    document.querySelectorAll('[id^="coll-check-"]').forEach(cb => cb.disabled = true);
+  }, 1000);
+}
+
+async function openDeliveryViewModal(assocId, monthNum) {
+  openDeliveryModal(assocId, monthNum);
+  setTimeout(() => {
+    document.querySelectorAll('[id^="del-check-"]').forEach(cb => cb.disabled = true);
+  }, 1000);
+}
+
+// ============================================
+// ADMIN WISHES PANEL
+// ============================================
+function initAdminWishesPanel() {
+  const sel = document.getElementById('admin-wish-assoc');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— اختر الجمعية —</option>' +
+    state.allAssocs.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+}
+
+async function loadAdminWishes() {
+  const assocId  = document.getElementById('admin-wish-assoc').value;
+  const monthNum = document.getElementById('admin-wish-month').value;
+  const content  = document.getElementById('admin-wishes-content');
+
+  if (!assocId) { content.innerHTML = ''; return; }
+
+  // Populate months dropdown
+  const monthSel = document.getElementById('admin-wish-month');
+  if (assocId && monthSel.dataset.assoc !== assocId) {
+    monthSel.dataset.assoc = assocId;
+    const months = await api({action:'getMonths', assocId});
+    monthSel.innerHTML = '<option value="">— الشهر —</option>' +
+      (months||[]).map(m => `<option value="${m.monthNum}">الشهر ${m.monthNum} — ${m.date}${m.closed?' 🔒':''}</option>`).join('');
+    content.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center">اختر شهراً لعرض الرغبات</div>';
+    return;
+  }
+
+  if (!monthNum) { content.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center">اختر شهراً لعرض الرغبات</div>'; return; }
+
+  content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+  const [subs, wishes, summary, months] = await Promise.all([
+    api({action:'getSubscriptions', assocId}),
+    api({action:'getWishes', assocId, monthNum}),
+    api({action:'getMonthWishSummary', assocId, monthNum}),
+    api({action:'getMonths', assocId})
+  ]);
+
+  const assoc    = state.allAssocs.find(a => a.id === assocId);
+  const sv       = assoc ? parseFloat(assoc.shareValue) : 0;
+  const dur      = assoc ? parseInt(assoc.duration) : 1;
+  const subList  = subs   || [];
+  const wishList = wishes || [];
+  const month    = (months||[]).find(m => m.monthNum == monthNum);
+  const isLocked = month && month.closed;
+
+  const capPct = summary.totalCapacity > 0
+    ? Math.min(100, Math.round(summary.usedCapacity / summary.totalCapacity * 100)) : 0;
+
+  content.innerHTML = `
+    <!-- ملخص السعة -->
+    <div class="counter-card" style="margin-bottom:16px;${isLocked?'background:linear-gradient(135deg,#15803d,#16a34a)':''}">
+      <div style="flex:1">
+        <div class="counter-card-label">${isLocked?'🔒 هذا الشهر مغلق':'📊 سعة الشهر '+monthNum}</div>
+        <div class="counter-card-val">${Number(summary.usedCapacity).toLocaleString('ar')} / ${Number(summary.totalCapacity).toLocaleString('ar')} سهم</div>
+        <div class="counter-card-sub">
+          ${isLocked ? 'لا يمكن التعديل' : `متبقي: ${summary.remaining.toFixed(1)} سهم — ${summary.isFull?'⛔ الشهر ممتلئ':'✅ يمكن الإضافة'}`}
+        </div>
+        <div class="progress-wrap" style="margin-top:10px">
+          <div class="progress-bar" style="height:10px">
+            <div class="progress-fill ${capPct>=100?'red':'green'}" style="width:${capPct}%"></div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;opacity:0.85">
+        <div style="font-size:32px;font-weight:900">${capPct}%</div>
+        <div style="font-size:12px;opacity:0.7">نسبة الامتلاء</div>
+      </div>
+    </div>
+
+    <!-- جدول الأعضاء مع رغباتهم -->
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>العضو</th><th>أسهمه</th><th>رغبته في الشهر ${monthNum}</th><th>قيمة التسليم</th>
+          ${!isLocked?'<th>تعديل</th>':''}
+        </tr></thead>
+        <tbody>
+          ${subList.map((s, i) => {
+            const wish = wishList.find(w => w.memberId === s.memberId);
+            const wSh  = wish ? parseFloat(wish.sharesCount) : 0;
+            const delV = wSh * sv * dur;
+            const myShares = parseFloat(s.sharesCount);
+            return `<tr>
+              <td>${i+1}</td>
+              <td><strong>${s.memberName}</strong></td>
+              <td>${myShares} سهم</td>
+              <td>
+                ${wSh > 0
+                  ? `<span class="badge badge-success">${wSh} سهم</span>`
+                  : `<span class="badge badge-gray">لم يحدد</span>`}
+              </td>
+              <td>${wSh>0?Number(delV).toLocaleString('ar')+' ﷼':'—'}</td>
+              ${!isLocked ? `<td>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <input type="number" id="aw-input-${i}" value="${wSh||''}"
+                    min="0" max="${myShares}" step="0.5"
+                    class="form-control" style="width:80px;padding:6px 8px;font-size:13px"
+                    placeholder="0">
+                  <button class="btn btn-primary btn-sm"
+                    onclick="adminSaveWish('${assocId}','${s.memberId}','${s.memberName}',${monthNum},${i},'${wish?wish.id:''}')">
+                    حفظ
+                  </button>
+                  ${wish ? `<button class="btn btn-danger btn-sm"
+                    onclick="adminDeleteWish('${wish.id}','${assocId}',${monthNum})">✕</button>` : ''}
+                </div>
+              </td>` : ''}
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+async function adminSaveWish(assocId, memberId, memberName, monthNum, rowIdx, existingId) {
+  const val = parseFloat(document.getElementById('aw-input-' + rowIdx).value) || 0;
+  
+  // مسح خطأ سابق
+  const oldErr = document.getElementById('aw-err-' + rowIdx);
+  if (oldErr) oldErr.remove();
+
+  const res = await api({action:'saveWish', assocId, memberId, memberName,
+                          monthNum: monthNum.toString(), sharesCount: val,
+                          isAdmin: 'true'});
+  if (res.error) {
+    // أظهر الخطأ تحت الصف مباشرة
+    const row = document.querySelector(`[id^="aw-input-${rowIdx}"]`)?.closest('tr');
+    if (row) {
+      const errRow = document.createElement('tr');
+      errRow.id = 'aw-err-' + rowIdx;
+      errRow.innerHTML = `<td colspan="6">
+        <div style="background:#fee2e2;border-radius: var(--r-xs);padding:10px 14px;color:#991b1b;
+          font-size:13px;font-weight:600;margin:4px 0;white-space:pre-line">
+          ⛔ ${res.error}
+        </div></td>`;
+      row.parentNode.insertBefore(errRow, row.nextSibling);
+    } else {
+      toast(res.error, 'error');
+    }
+    return;
+  }
+  toast('✅ تم حفظ رغبة ' + memberName, 'success');
+  loadAdminWishes();
+}
+
+async function adminDeleteWish(wishId, assocId, monthNum) {
+  if (!confirm('هل تريد حذف هذه الرغبة؟')) return;
+  const res = await api({action:'deleteWish', id: wishId, assocId,
+                          monthNum: monthNum.toString(), isAdmin: 'true'});
+  if (res.error) return toast(res.error, 'error');
+  toast('تم حذف الرغبة', 'success');
+  loadAdminWishes();
+}
+
+// ============================================
+// MODAL HELPERS
+// ============================================
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ============================================
+// THEME TOGGLE
+// ============================================
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  const btn = document.getElementById('theme-btn');
+  btn.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+// تطبيق الثيم المحفوظ عند التحميل
+(function() {
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = '☀️';
+    });
+  }
+})();
+
+// ============================================
+// INIT
+// ============================================
+// Check if API URL is set
+if (API_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+  console.warn('⚠️ يرجى تحديث API_URL بعنوان Google Apps Script الخاص بك');
+}
+
+// ══════════════════════════════════════════
+// استعادة الجلسة تلقائياً عند تحديث الصفحة
+// ══════════════════════════════════════════
+(function restoreSession() {
+  try {
+    const saved = sessionStorage.getItem('session');
+    if (!saved) return;
+    const s = JSON.parse(saved);
+    if (!s || !s.user) return;
+    state.user        = s.user;
+    state.isAdmin     = s.isAdmin || false;
+    state.adminPhone  = s.adminPhone || '';
+    state.adminMember = s.adminMember || null;
+    // استعادة الواجهة
+    document.getElementById('page-login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('user-name-display').textContent = state.user.name;
+    document.getElementById('user-role-display').textContent = state.isAdmin ? '👑 مدير' : 'عضو';
+    buildNav();
+    if (state.isAdmin) {
+      showPage('admin');
+      loadAdminDashboard();
+    } else {
+      showPage('member');
+      loadMemberDashboard();
+    }
+  } catch(e) {
+    sessionStorage.removeItem('session');
+  }
+})();
+
+</script>
+</body>
+</html>
