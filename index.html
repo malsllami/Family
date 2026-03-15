@@ -284,10 +284,6 @@ body.dark .header { background: #0d1829; }
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(6px, 0.8vw, 10px);
   margin-bottom: clamp(6px, 0.8vw, 10px);
-  max-width: 600px;
-}
-#admin-extra-grid {
-  max-width: 600px;
 }
 .stat-card {
   border-radius: clamp(14px, 2vw, 22px);
@@ -325,12 +321,16 @@ body.dark .header { background: #0d1829; }
 }
 .stat-val {
   font-family: 'Sora', sans-serif;
-  font-size: clamp(16px, 3.5vw, 28px);
+  font-size: clamp(14px, 3vw, 26px);
   font-weight: 800;
   color: #fff !important;
   line-height: 1;
   letter-spacing: -0.5px;
   margin-top: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 .stat-label {
   font-size: clamp(8px, 1.2vw, 11px);
@@ -1376,7 +1376,7 @@ body.dark select.form-control {
   <div id="page-admin" class="page">
     <div class="container section">
       <div id="admin-stats-grid"></div>
-      <div id="admin-extra-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;max-width:600px"></div>
+      <div id="admin-extra-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"></div>
       
       <!-- Management Tabs -->
       <div class="tabs" style="margin-top:8px">
@@ -1971,21 +1971,30 @@ async function loadAdminDashboard() {
   
   // Stats
   const activeAssocs = state.allAssocs.filter(a => a.status === 'نشطة').length;
+  // حساب إجمالي الجمعيات
+  const totalAssocValue = state.allAssocs.reduce((s,a)=>s+(parseFloat(a.sharesCount||0)*parseFloat(a.shareValue||0)*parseInt(a.duration||1)),0);
+  // تنسيق مختصر للأرقام الكبيرة
+  function fmtShort(n) {
+    if (n >= 1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'') + 'م';
+    if (n >= 1000)    return (n/1000).toFixed(0) + 'ك';
+    return String(n);
+  }
+
   document.getElementById('admin-stats-grid').innerHTML = `
-    <div class="stat-card blue">
-      <div class="stat-icon blue">👥</div>
-      <div class="stat-val">${state.allMembers.length}</div>
-      <div class="stat-label">الأعضاء</div>
+    <div class="stat-card green">
+      <div class="stat-icon green">✅</div>
+      <div class="stat-val">${activeAssocs}</div>
+      <div class="stat-label">النشطة</div>
     </div>
     <div class="stat-card gold">
       <div class="stat-icon gold">🏛️</div>
       <div class="stat-val">${state.allAssocs.length}</div>
       <div class="stat-label">الجمعيات</div>
     </div>
-    <div class="stat-card green">
-      <div class="stat-icon green">✅</div>
-      <div class="stat-val">${activeAssocs}</div>
-      <div class="stat-label">النشطة</div>
+    <div class="stat-card blue">
+      <div class="stat-icon blue">👥</div>
+      <div class="stat-val">${state.allMembers.length}</div>
+      <div class="stat-label">الأعضاء</div>
     </div>
     <div class="stat-card purple">
       <div class="stat-icon purple">📋</div>
@@ -1994,8 +2003,8 @@ async function loadAdminDashboard() {
     </div>
     <div class="stat-card" style="background:linear-gradient(145deg,#1a1a2e,#16213e)!important;color:#fff!important;box-shadow:0 6px 24px rgba(0,0,0,0.3)">
       <div class="stat-icon" style="background:rgba(255,255,255,0.12)">💰</div>
-      <div class="stat-val">${Number(state.allAssocs.reduce((s,a)=>s+(parseFloat(a.sharesCount||0)*parseFloat(a.shareValue||0)*parseInt(a.duration||1)),0)).toLocaleString('ar')}</div>
-      <div class="stat-label">إجمالي الجمعيات ﷼</div>
+      <div class="stat-val" style="font-size:clamp(14px,2.5vw,22px)">${fmtShort(totalAssocValue)} ﷼</div>
+      <div class="stat-label">إجمالي ﷼</div>
     </div>
     <div class="stat-card" style="background:linear-gradient(145deg,#1f2937,#374151)!important;color:#fff!important;box-shadow:0 6px 24px rgba(0,0,0,0.3)" id="online-stat-card">
       <div class="stat-icon" style="background:rgba(255,255,255,0.12)">🟢</div>
