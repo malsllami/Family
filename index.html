@@ -2303,8 +2303,8 @@ async function loadMemberDashboard() {
 
         <!-- أشهر الاستلام من الرغبات -->
         ${deliveryMonths.length ? `
-        <div class="section-title" style="font-size:14px;margin-bottom:12px">📤 أشهر استلامي المحددة</div>
-        <div class="months-table-card" style="margin-bottom:0">
+        <div class="section-title" style="font-size:14px;margin-bottom:10px">📤 أشهر استلامي المحددة</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
           ${deliveryMonths.map((w,wi) => {
             const mDate = new Date(a.startDate);
             mDate.setMonth(mDate.getMonth() + (parseInt(w.monthNum)-1));
@@ -2312,18 +2312,18 @@ async function loadMemberDashboard() {
             const mShares    = parseFloat(w.sharesCount);
             const mValue     = mShares * shareVal * dur;
             const urgency    = mDaysLeft <= 7 ? 'urgent' : mDaysLeft <= 30 ? 'soon' : '';
-            const mLabel     = mDaysLeft === 0 ? 'هذا الشهر 🔔' : mDaysLeft < 0 ? 'مضى' : ('بعد ' + mDaysLeft + ' يوم');
-            const accentColor = urgency==='urgent' ? '#f03e3e' : urgency==='soon' ? '#f59f00' : '#3b5bdb';
-            const pillClass  = urgency==='urgent' ? 'uncollected' : urgency==='soon' ? 'delivery' : 'collected';
-            const numStyle   = 'background:linear-gradient(135deg,' + accentColor + ',' + accentColor + 'bb);min-width:46px;height:46px;font-size:16px';
-            return '<div class="month-row-item">'
-              + '<div class="month-row-num" style="' + numStyle + '">' + w.monthNum + '</div>'
-              + '<div class="month-row-info">'
-              + '<div class="month-row-shares" style="font-size:15px;font-weight:800">' + mShares + ' سهم — ' + Number(mValue).toLocaleString('ar') + ' ﷼</div>'
-              + '<div class="month-row-date">📅 ' + fmtDate(mDate.toISOString()) + '</div>'
+            const mLabel     = mDaysLeft === 0 ? 'هذا الشهر 🔔' : mDaysLeft < 0 ? 'مضى ✓' : ('بعد ' + mDaysLeft + ' يوم');
+            const accentColor = urgency==='urgent' ? '#f03e3e' : urgency==='soon' ? '#f59f00' : mDaysLeft < 0 ? '#12b886' : '#3b5bdb';
+            const bgColor    = urgency==='urgent' ? 'rgba(240,62,62,0.06)' : urgency==='soon' ? 'rgba(245,159,0,0.06)' : mDaysLeft < 0 ? 'rgba(18,184,134,0.06)' : 'var(--surface-2)';
+            return '<div style="display:flex;align-items:center;gap:10px;background:' + bgColor + ';border:1px solid ' + accentColor + '33;border-radius:16px;padding:12px 14px">'
+              + '<div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,' + accentColor + ',' + accentColor + 'aa);color:#fff;display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-size:16px;font-weight:800;flex-shrink:0">' + w.monthNum + '</div>'
+              + '<div style="flex:1;min-width:0">'
+              + '<div style="font-size:13px;font-weight:700;color:var(--text)">' + mShares + ' سهم</div>'
+              + '<div style="font-size:15px;font-weight:800;color:' + accentColor + ';margin-top:1px">' + Number(mValue).toLocaleString('ar') + ' ﷼</div>'
               + '</div>'
-              + '<div class="month-row-status">'
-              + '<span class="status-pill ' + pillClass + '" style="font-size:12px">' + mLabel + '</span>'
+              + '<div style="text-align:center;flex-shrink:0">'
+              + '<div style="font-size:11px;font-weight:700;color:' + accentColor + ';background:' + accentColor + '18;border:1px solid ' + accentColor + '33;border-radius:20px;padding:4px 10px;white-space:nowrap">' + mLabel + '</div>'
+              + '<div style="font-size:10px;color:var(--text-3);margin-top:4px">' + fmtDate(mDate.toISOString()) + '</div>'
               + '</div>'
               + '</div>';
           }).join('')}
