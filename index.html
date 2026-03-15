@@ -1351,7 +1351,7 @@ body.dark select.form-control {
   <div id="page-admin" class="page">
     <div class="container section">
       <div id="admin-stats-grid"></div>
-      <div id="admin-extra-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px"></div>
+      <div id="admin-extra-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"></div>
       
       <!-- Management Tabs -->
       <div class="tabs" style="margin-top:8px">
@@ -2036,10 +2036,106 @@ async function loadAdminDashboard() {
 
   const extraGrid = document.getElementById('admin-extra-grid');
   if (extraGrid) extraGrid.innerHTML = countdownHTML + onlineHTML;
-  
+
   renderMembersTable();
   renderAdminAssocs();
   renderSubsTable();
+
+  // ── بطاقة عداد التسليم ──
+  renderDeliveryCountdown();
+}
+
+async function renderDeliveryCountdown() {
+  const extraGrid = document.getElementById('admin-extra-grid');
+  if (!extraGrid) return;
+
+  // جلب جميع الجمعيات النشطة وحساب إجمالي التسليم
+  const activeAssocs = state.allAssocs.filter(a => a.status === 'نشطة' || a.status === 'جديدة');
+  if (!activeAssocs.length) return;
+
+  let totalDelivery   = 0;  // إجمالي مبالغ التسليم الكلي
+  let deliveredSoFar  = 0;  // ما تم تسليمه فعلاً
+  let pendingCount    = 0;  // عدد العمليات المتبقية
+
+  for (const a of activeAssocs) {
+    const dur = parseInt(a.duration || 1);
+    const sv  = parseFloat(a.shareValue || 0);
+    const sh  = parseFloat(a.sharesCount || 0);
+    totalDelivery += dur * sv * sh;
+
+    // جلب سجلات التسليم لكل الأشهر
+    for (let mn = 1; mn <= dur; mn++) {
+      const delData = await api({action:'getDeliveryData', assocId: a.id, monthNum: String(mn)});
+      const list = delData || [];
+      list.forEach(w => {
+        const val  = parseFloat(w.deliveryValue || 0);
+        const done = w.delivered === true || w.delivered === 'true' || w.delivered === 'TRUE';
+        if (done) deliveredSoFar += val;
+        else pendingCount++;
+      });
+    }
+  }
+
+  const remaining = Math.max(0, totalDelivery - deliveredSoFar);
+  const pct       = totalDelivery > 0 ? Math.min(100, Math.round(deliveredSoFar / totalDelivery * 100)) : 0;
+  const pctLeft   = 100 - pct;
+
+  // رسم القوس الدائري (SVG arc)
+  const r = 38, cx = 46, cy = 46;
+  const circumference = 2 * Math.PI * r;
+  const strokeDone    = (pct / 100) * circumference;
+  const strokeLeft    = circumference - strokeDone;
+
+  const delivCard = '<div class="stat-card-wide" style="'
+    + 'background:linear-gradient(145deg,#1a0533,#4a1272)!important;'
+    + 'box-shadow:0 8px 32px rgba(74,18,114,0.4);'
+    + 'border:1px solid rgba(167,139,250,0.2);'
+    + 'grid-column:1/-1;'  // يمتد على العرض الكامل
+    + '">'
+    // ── SVG ring ──
+    + '<div style="position:relative;width:92px;height:92px;flex-shrink:0">'
+    + '<svg width="92" height="92" viewBox="0 0 92 92">'
+    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="7"/>'
+    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none"'
+    + ' stroke="url(#dg)" stroke-width="7" stroke-linecap="round"'
+    + ' stroke-dasharray="' + strokeDone.toFixed(1) + ' ' + strokeLeft.toFixed(1) + '"'
+    + ' transform="rotate(-90 ' + cx + ' ' + cy + ')"/>'
+    + '<defs><linearGradient id="dg" x1="0%" y1="0%" x2="100%" y2="0%">'
+    + '<stop offset="0%" stop-color="#a78bfa"/>'
+    + '<stop offset="100%" stop-color="#7c3aed"/>'
+    + '</linearGradient></defs>'
+    + '</svg>'
+    + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">'
+    + '<div style="font-family:Sora,sans-serif;font-size:16px;font-weight:800;color:#fff;line-height:1">' + pct + '%</div>'
+    + '<div style="font-size:9px;color:rgba(255,255,255,0.5);margin-top:2px">مُسلَّم</div>'
+    + '</div></div>'
+    // ── info ──
+    + '<div style="flex:1;min-width:0">'
+    + '<div style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:600;margin-bottom:6px">💰 عداد التسليم الكلي</div>'
+    // total
+    + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">'
+    + '<span style="font-size:10px;color:rgba(255,255,255,0.45)">الإجمالي</span>'
+    + '<span style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;color:rgba(255,255,255,0.7)">' + Number(totalDelivery).toLocaleString('ar') + ' ﷼</span>'
+    + '</div>'
+    // delivered
+    + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">'
+    + '<span style="font-size:10px;color:rgba(167,139,250,0.8)">✅ تم التسليم</span>'
+    + '<span style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;color:#a78bfa">' + Number(deliveredSoFar).toLocaleString('ar') + ' ﷼</span>'
+    + '</div>'
+    // remaining
+    + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">'
+    + '<span style="font-size:10px;color:rgba(251,191,36,0.8)">⏳ المتبقي</span>'
+    + '<span style="font-family:Sora,sans-serif;font-size:18px;font-weight:900;color:#fbbf24">' + Number(remaining).toLocaleString('ar') + ' ﷼</span>'
+    + '</div>'
+    // progress bar
+    + '<div style="height:5px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden">'
+    + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:999px;transition:width 1s ease"></div>'
+    + '</div>'
+    + '<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px">' + pendingCount + ' عملية تسليم معلقة</div>'
+    + '</div></div>';
+
+  // أضف البطاقة بعد البطاقتين الموجودتين
+  extraGrid.innerHTML = extraGrid.innerHTML + delivCard;
 }
 
 function adminTab(tab) {
