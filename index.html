@@ -1382,7 +1382,7 @@ body.dark select.form-control {
       </div>
 
       <!-- Members Tab -->
-      <div id="admin-tab-members">
+      <div id="admin-tab-members" style="display:none">
         <div class="section-header">
           <div class="section-title">الأعضاء المسجلون</div>
           <button class="btn btn-primary" onclick="openAddMemberModal()">➕ إضافة عضو</button>
@@ -1395,7 +1395,7 @@ body.dark select.form-control {
       </div>
 
       <!-- Associations Tab -->
-      <div id="admin-tab-associations" style="display:none">
+      <div id="admin-tab-associations">
         <div class="section-header">
           <div class="section-title">الجمعيات</div>
           <button class="btn btn-primary" onclick="openAddAssocModal()">➕ إنشاء جمعية</button>
@@ -2734,20 +2734,47 @@ function renderMonthsGrid(months, assoc) {
       </div>
 
       <!-- إجمالي التحصيل (ثابت) -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px">
-        <div style="background:var(--bg);border-radius:9px;padding:9px 10px">
-          <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">💰 التحصيل الشهري الثابت</div>
-          <div style="font-size:14px;font-weight:800;color:var(--primary)">${fixedShares} سهم</div>
-          <div style="font-size:11px;color:var(--text-muted)">${Number(fixedRiyal).toLocaleString('ar')} ﷼</div>
+      <div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:700;margin-bottom:8px">💰 التحصيل الشهري</div>
+        
+        <!-- الإجمالي -->
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+          <span style="font-size:11px;color:var(--text-2)">الإجمالي:</span>
+          <span style="font-size:16px;font-weight:800;color:var(--primary)">${Number(fixedRiyal).toLocaleString('ar')} ﷼</span>
         </div>
-        <div style="background:var(--bg);border-radius:9px;padding:9px 10px">
-          <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">📤 الموجود للتسليم</div>
-          <div style="font-size:14px;font-weight:800;color:${remainRiyal>0?'var(--success)':'var(--danger)'}">
-            ${Number(availRiyal).toLocaleString('ar')} ﷼
-          </div>
-          <div style="font-size:11px;color:var(--text-muted)">
-            مُخصَّص: ${Number(usedRiyal).toLocaleString('ar')} ﷼ (${usedShares_} سهم) — متبقي: ${Number(remainRiyal).toLocaleString('ar')} ﷼
-          </div>
+        
+        <!-- نسبة التحصيل (placeholder - يتحدث بالمودال) -->
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:10px;color:#047857">✅ تم تحصيله:</span>
+          <span style="font-size:13px;font-weight:700;color:#047857">${collDone ? Number(fixedRiyal).toLocaleString('ar') : '—'} ﷼</span>
+        </div>
+        
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:10px;color:#1e40af">⏳ المتبقي:</span>
+          <span style="font-size:13px;font-weight:700;color:#1e40af">${collDone ? '0' : Number(fixedRiyal).toLocaleString('ar')} ﷼</span>
+        </div>
+        
+        <div style="margin-top:8px;font-size:10px;color:var(--text-3);text-align:center">
+          ${fixedShares} سهم × ${Number(sv).toLocaleString('ar')} ﷼
+        </div>
+      </div>
+
+      <!-- التسليم -->
+      <div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:700;margin-bottom:8px">📤 التسليم</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+          <span style="font-size:11px;color:var(--text-2)">الموجود:</span>
+          <span style="font-size:14px;font-weight:800;color:var(--success)">${Number(availRiyal).toLocaleString('ar')} ﷼</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:10px;color:var(--text-3)">مُخصَّص:</span>
+          <span style="font-size:12px;font-weight:700;color:var(--text-2)">${Number(usedRiyal).toLocaleString('ar')} ﷼</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:10px;color:var(--text-3)">متبقي:</span>
+          <span style="font-size:12px;font-weight:700;color:${remainRiyal>0?'var(--success)':'var(--danger)'}">
+            ${Number(remainRiyal).toLocaleString('ar')} ﷼
+          </span>
         </div>
       </div>
 
@@ -2870,21 +2897,21 @@ function renderCollectionTable(rows, assocId, monthNum, shareValue) {
     <!-- بطاقة التحصيل - تحديث ما تم والمتبقي -->
     <div class="counter-card" id="coll-counter-card">
       <div style="flex:1">
-        <div class="counter-card-label">💰 تحصيل الشهر</div>
+        <div class="counter-card-label" style="font-size:12px;font-weight:700;margin-bottom:10px">💰 تحصيل الشهر</div>
         
         <!-- ما تم تحصيله -->
-        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
-          <div style="font-size:11px;color:var(--text-2);font-weight:600;min-width:80px">✅ تم تحصيله:</div>
-          <div style="font-size:18px;font-weight:800;color:var(--success)" id="coll-collected-val">0 ريال</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px;background:rgba(16,185,129,0.1);padding:8px 10px;border-radius:10px;border:1.5px solid rgba(16,185,129,0.3)">
+          <div style="font-size:12px;color:#047857;font-weight:700;min-width:85px">✅ تم تحصيله:</div>
+          <div style="font-size:20px;font-weight:900;color:#047857" id="coll-collected-val">0 ريال</div>
         </div>
         
         <!-- المتبقي -->
-        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
-          <div style="font-size:11px;color:var(--text-2);font-weight:600;min-width:80px">⏳ المتبقي:</div>
-          <div style="font-size:18px;font-weight:800;color:var(--primary)" id="coll-remaining-val">${Number(totalMonthValue).toLocaleString('ar')} ريال</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;background:rgba(59,91,219,0.08);padding:8px 10px;border-radius:10px;border:1.5px solid rgba(59,91,219,0.25)">
+          <div style="font-size:12px;color:#1e40af;font-weight:700;min-width:85px">⏳ المتبقي:</div>
+          <div style="font-size:20px;font-weight:900;color:#1e40af" id="coll-remaining-val">${Number(totalMonthValue).toLocaleString('ar')} ريال</div>
         </div>
         
-        <div class="counter-card-sub" id="coll-remaining-sub" style="margin-top:6px">${rows.length} عضو لم يُحصّل بعد</div>
+        <div class="counter-card-sub" id="coll-remaining-sub" style="margin-top:8px;font-size:12px">${rows.length} عضو لم يُحصّل بعد</div>
       </div>
       <div class="counter-card-right">
         <div class="ring">
@@ -2985,6 +3012,12 @@ function updateCollectionCounters(totalRows, totalMonthValue) {
     collectedEl.style.transform = 'scale(1.08)';
     collectedEl.textContent = Number(doneValue).toLocaleString('ar') + ' ريال';
     setTimeout(() => collectedEl.style.transform = 'scale(1)', 300);
+    // تغيير لون الحاوية حسب الحالة
+    const collectedContainer = collectedEl.parentElement;
+    if (collectedContainer && doneValue > 0) {
+      collectedContainer.style.background = 'rgba(16,185,129,0.15)';
+      collectedContainer.style.borderColor = 'rgba(16,185,129,0.4)';
+    }
   }
   
   // تحديث المتبقي
