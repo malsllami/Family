@@ -2738,25 +2738,17 @@ function renderMonthsGrid(months, assoc) {
         <div style="font-size:11px;color:var(--text-muted);font-weight:700;margin-bottom:8px">💰 التحصيل الشهري</div>
         
         <!-- الإجمالي -->
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-          <span style="font-size:11px;color:var(--text-2)">الإجمالي:</span>
-          <span style="font-size:16px;font-weight:800;color:var(--primary)">${Number(fixedRiyal).toLocaleString('ar')} ﷼</span>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="font-size:12px;color:var(--text-2);font-weight:600">الإجمالي:</span>
+          <span style="font-size:18px;font-weight:900;color:var(--primary)">${Number(fixedRiyal).toLocaleString('ar')} ﷼</span>
         </div>
         
-        <!-- نسبة التحصيل (placeholder - يتحدث بالمودال) -->
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:10px;color:#047857">✅ تم تحصيله:</span>
-          <span style="font-size:13px;font-weight:700;color:#047857">${collDone ? Number(fixedRiyal).toLocaleString('ar') : '—'} ﷼</span>
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);display:flex;justify-content:space-between;align-items:center">
+          <span>${fixedShares} سهم × ${Number(sv).toLocaleString('ar')} ﷼</span>
+          <span class="badge ${collDone?'badge-success':'badge-warning'}" style="font-size:10px">${collDone?'✅ مكتمل':'⏳ جاري'}</span>
         </div>
         
-        <div style="display:flex;justify-content:space-between;align-items:baseline">
-          <span style="font-size:10px;color:#1e40af">⏳ المتبقي:</span>
-          <span style="font-size:13px;font-weight:700;color:#1e40af">${collDone ? '0' : Number(fixedRiyal).toLocaleString('ar')} ﷼</span>
-        </div>
-        
-        <div style="margin-top:8px;font-size:10px;color:var(--text-3);text-align:center">
-          ${fixedShares} سهم × ${Number(sv).toLocaleString('ar')} ﷼
-        </div>
+        ${!collDone ? '<div style="font-size:10px;color:var(--text-3);margin-top:6px;text-align:center">للتفاصيل: اضغط زر "💰 التحصيل"</div>' : ''}
       </div>
 
       <!-- التسليم -->
