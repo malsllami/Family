@@ -1314,6 +1314,14 @@ body.dark select.form-control {
         <button class="btn-login member-btn" onclick="loginMember()">
           🚀 دخول
         </button>
+        <div id="biometricSection" style="display:none;width:100%;text-align:center;margin-top:14px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;color:var(--text-muted);font-size:12px;">
+            <div style="flex:1;height:1px;background:var(--glass-border)"></div>أو<div style="flex:1;height:1px;background:var(--glass-border)"></div>
+          </div>
+          <button type="button" onclick="loginWithBiometric()" style="width:100%;padding:12px;background:rgba(59,91,219,0.12);border:1px solid rgba(116,143,252,0.35);border-radius:var(--r-lg);color:#93c5fd;font-weight:600;cursor:pointer;font-size:14px;">
+            👆 دخول بالبصمة
+          </button>
+        </div>
       </div>
 
       <!-- حقول مخفية للتسجيل (داخلي) -->
@@ -1334,6 +1342,14 @@ body.dark select.form-control {
         <button class="btn-login admin-btn" onclick="adminLogin()">
           👑 دخول لوحة التحكم
         </button>
+        <div id="adminBiometricSection" style="display:none;width:100%;text-align:center;margin-top:14px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;color:var(--text-muted);font-size:12px;">
+            <div style="flex:1;height:1px;background:var(--glass-border)"></div>أو<div style="flex:1;height:1px;background:var(--glass-border)"></div>
+          </div>
+          <button type="button" onclick="loginAdminWithBiometric()" style="width:100%;padding:12px;background:rgba(240,180,41,0.12);border:1px solid rgba(240,180,41,0.35);border-radius:var(--r-lg);color:var(--gold-l);font-weight:600;cursor:pointer;font-size:14px;">
+            👆 دخول بالبصمة
+          </button>
+        </div>
       </div>
 
       <p style="margin-top:28px;font-size:12px;color:var(--text-muted);text-align:center;line-height:1.7">
@@ -1382,7 +1398,7 @@ body.dark select.form-control {
       </div>
 
       <!-- Members Tab -->
-      <div id="admin-tab-members" style="display:none">
+      <div id="admin-tab-members">
         <div class="section-header">
           <div class="section-title">الأعضاء المسجلون</div>
           <button class="btn btn-primary" onclick="openAddMemberModal()">➕ إضافة عضو</button>
@@ -1395,7 +1411,7 @@ body.dark select.form-control {
       </div>
 
       <!-- Associations Tab -->
-      <div id="admin-tab-associations">
+      <div id="admin-tab-associations" style="display:none">
         <div class="section-header">
           <div class="section-title">الجمعيات</div>
           <button class="btn btn-primary" onclick="openAddAssocModal()">➕ إنشاء جمعية</button>
@@ -1655,6 +1671,7 @@ let state = {
   defaultDuration: 12,
   adminCode: '',
 };
+let lastVerifiedAdminCode = null; // في الذاكرة فقط لهذه الجلسة -- لا يُحفظ في sessionStorage مع state
 
 // ============================================
 // API
@@ -1698,6 +1715,253 @@ async function api(params) {
   } finally {
     _hideLoading();
   }
+}
+
+// طلبات POST (للبصمة فقط) -- بيانات WebAuthn (CBOR/attestation) أكبر من حد
+// طول رابط GET الآمن، فتحتاج POST بدل نمط api() أعلاه المستخدم لبقية التطبيق.
+async function apiPost(data) {
+  try {
+    const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) });
+    return await response.json();
+  } catch (e) {
+    return { error: 'فشل الاتصال بسبب انقطاع الشبكة', connectionError: true };
+  }
+}
+
+// =====================================================================
+// تسجيل الدخول بالبصمة (WebAuthn)
+// =====================================================================
+
+function b64urlFromBuffer(buf) {
+    var bytes = new Uint8Array(buf);
+    var str = '';
+    for (var i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function bufferFromB64url(b64url) {
+    var s = b64url.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4 !== 0) s += '=';
+    var str = atob(s);
+    var bytes = new Uint8Array(str.length);
+    for (var i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i);
+    return bytes;
+}
+
+function explainWebAuthnError(e) {
+    console.error('WebAuthn error:', e.name, '-', e.message);
+    if (e.name === 'SecurityError') {
+        // سبب شائع: rpId في WebAuthn.gs لسا REPLACE_WITH_YOUR_DOMAIN ولا يطابق
+        // دومين الصفحة الفعلي، أو الصفحة محمّلة عبر blob:/iframe، أو بدون HTTPS فعلاً.
+        toast('خطأ أمني: ' + e.message, 'error');
+        return;
+    }
+    if (e.name === 'NotSupportedError') {
+        toast('البصمة غير مدعومة على هذا الرابط/المتصفح: ' + e.message, 'error');
+        return;
+    }
+    if (e.name === 'NotAllowedError') return; // المستخدم ألغى أو انتهى الوقت -- صامت
+    toast('فشل العملية: ' + (e.message || e.name), 'error');
+}
+
+function checkBiometricAvailable() {
+    var hasCred = !!localStorage.getItem('biometric_credential_id');
+    var sec = document.getElementById('biometricSection');
+    if (sec) sec.style.display = (window.PublicKeyCredential && hasCred) ? 'block' : 'none';
+
+    var hasAdminCred = !!localStorage.getItem('admin_biometric_credential_id');
+    var adminSec = document.getElementById('adminBiometricSection');
+    if (adminSec) adminSec.style.display = (window.PublicKeyCredential && hasAdminCred) ? 'block' : 'none';
+}
+
+function dismissBiometricBanner() {
+    var b = document.getElementById('biometricBanner');
+    if (b) b.style.display = 'none';
+    localStorage.setItem('biometric_banner_dismissed', '1');
+}
+function dismissAdminBiometricBanner() {
+    var b = document.getElementById('adminBiometricBanner');
+    if (b) b.style.display = 'none';
+    localStorage.setItem('admin_biometric_banner_dismissed', '1');
+}
+
+function offerBiometricSetup() {
+    if (!state.user || !state.user.phone) return;
+    if (localStorage.getItem('biometric_credential_id')) return;
+    if (localStorage.getItem('biometric_banner_dismissed')) return;
+    setTimeout(function() {
+        var b = document.getElementById('biometricBanner');
+        if (b) b.style.display = 'flex';
+    }, 800);
+}
+function offerAdminBiometricSetup() {
+    if (!state.isAdmin || !lastVerifiedAdminCode) return;
+    if (localStorage.getItem('admin_biometric_credential_id')) return;
+    if (localStorage.getItem('admin_biometric_banner_dismissed')) return;
+    setTimeout(function() {
+        var b = document.getElementById('adminBiometricBanner');
+        if (b) b.style.display = 'flex';
+    }, 800);
+}
+
+async function setupBiometric() {
+    if (!window.PublicKeyCredential) { toast('المتصفح لا يدعم البصمة، جرب Chrome أو Edge', 'error'); return; }
+    try {
+        var hasAuth = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        if (!hasAuth) { toast('الجهاز لا يدعم البصمة — فعّل Windows Hello أو بصمة الجوال في إعدادات الجهاز أولاً', 'error'); return; }
+    } catch(e) {}
+    try {
+        var chalResp = await apiPost({ action: 'generateRegisterChallenge', phone: state.user.phone });
+        if (chalResp.error) { toast(chalResp.error, 'error'); return; }
+
+        var createOptions = {
+            challenge: bufferFromB64url(chalResp.challenge),
+            rp: { name: chalResp.rpName, id: chalResp.rpId },
+            user: { id: bufferFromB64url(chalResp.userIdB64), name: chalResp.userName, displayName: chalResp.userDisplayName },
+            pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+            authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', requireResidentKey: false },
+            timeout: 60000
+        };
+        var cred = await navigator.credentials.create({ publicKey: createOptions });
+        var credIdB64url = b64urlFromBuffer(cred.rawId);
+
+        var regResp = await apiPost({
+            action: 'registerCredential',
+            phone: state.user.phone,
+            credentialId: credIdB64url,
+            attestationObjectB64: b64urlFromBuffer(cred.response.attestationObject),
+            clientDataJSONB64: b64urlFromBuffer(cred.response.clientDataJSON),
+            deviceName: (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || 'جهاز غير معروف'
+        });
+
+        if (regResp.error) { toast(regResp.error, 'error'); return; }
+
+        // محفوظ محلياً فقط كإشارة واجهة (أي جهاز/رقم يحاول البصمة) -- ليست آلية
+        // ثقة، السيرفر يتحقق من التوقيع في كل مرة دخول.
+        localStorage.setItem('biometric_credential_id', credIdB64url);
+        localStorage.setItem('biometric_phone', state.user.phone);
+        localStorage.setItem('biometric_banner_dismissed', '1');
+        dismissBiometricBanner();
+        toast('✅ تم تفعيل تسجيل الدخول بالبصمة', 'success');
+    } catch(e) {
+        explainWebAuthnError(e);
+    }
+}
+
+async function loginWithBiometric() {
+    var credId = localStorage.getItem('biometric_credential_id');
+    var phone = localStorage.getItem('biometric_phone');
+    if (!credId || !phone) { toast('لم يتم تفعيل البصمة بعد', 'error'); return; }
+    try {
+        var chalResp = await apiPost({ action: 'generateLoginChallenge', phone: phone });
+        if (chalResp.error) { toast(chalResp.error, 'error'); return; }
+
+        var assertion = await navigator.credentials.get({ publicKey: {
+            challenge: bufferFromB64url(chalResp.challenge),
+            rpId: chalResp.rpId,
+            allowCredentials: [{ id: bufferFromB64url(credId), type: 'public-key', transports: ['internal'] }],
+            userVerification: 'required',
+            timeout: 60000
+        }});
+
+        var verifyResp = await apiPost({
+            action: 'verifyAssertion',
+            phone: phone,
+            credentialId: credId,
+            authenticatorDataB64: b64urlFromBuffer(assertion.response.authenticatorData),
+            clientDataJSONB64: b64urlFromBuffer(assertion.response.clientDataJSON),
+            signatureB64: b64urlFromBuffer(assertion.response.signature)
+        });
+
+        if (verifyResp.error) { toast(verifyResp.error, 'error'); return; }
+
+        state.user = verifyResp; // نفس شكل استجابة loginMember() تماماً: {success, id, name, phone}
+        enterApp(false);
+        toast('مرحباً ' + state.user.name, 'success');
+    } catch(e) {
+        explainWebAuthnError(e);
+    }
+}
+
+async function setupAdminBiometric() {
+    if (!lastVerifiedAdminCode) { toast('سجّل دخول المدير بالرمز أولاً', 'error'); return; }
+    if (!window.PublicKeyCredential) { toast('المتصفح لا يدعم البصمة، جرب Chrome أو Edge', 'error'); return; }
+    try {
+        var hasAuth = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        if (!hasAuth) { toast('الجهاز لا يدعم البصمة — فعّل Windows Hello أو بصمة الجوال في إعدادات الجهاز أولاً', 'error'); return; }
+    } catch(e) {}
+    try {
+        var chalResp = await apiPost({ action: 'generateAdminRegisterChallenge', adminCode: lastVerifiedAdminCode });
+        if (chalResp.error) { toast(chalResp.error, 'error'); return; }
+
+        var createOptions = {
+            challenge: bufferFromB64url(chalResp.challenge),
+            rp: { name: chalResp.rpName, id: chalResp.rpId },
+            user: { id: bufferFromB64url(chalResp.userIdB64), name: chalResp.userName, displayName: chalResp.userDisplayName },
+            pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+            authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', requireResidentKey: false },
+            timeout: 60000
+        };
+        var cred = await navigator.credentials.create({ publicKey: createOptions });
+        var credIdB64url = b64urlFromBuffer(cred.rawId);
+
+        var regResp = await apiPost({
+            action: 'registerAdminCredential',
+            adminCode: lastVerifiedAdminCode,
+            credentialId: credIdB64url,
+            attestationObjectB64: b64urlFromBuffer(cred.response.attestationObject),
+            clientDataJSONB64: b64urlFromBuffer(cred.response.clientDataJSON),
+            deviceName: (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || 'جهاز غير معروف'
+        });
+
+        if (regResp.error) { toast(regResp.error, 'error'); return; }
+
+        localStorage.setItem('admin_biometric_credential_id', credIdB64url);
+        localStorage.setItem('admin_biometric_banner_dismissed', '1');
+        dismissAdminBiometricBanner();
+        toast('✅ تم تفعيل بصمة المدير', 'success');
+    } catch(e) {
+        explainWebAuthnError(e);
+    }
+}
+
+async function loginAdminWithBiometric() {
+    var credId = localStorage.getItem('admin_biometric_credential_id');
+    if (!credId) { toast('لم يتم تفعيل بصمة المدير بعد', 'error'); return; }
+    try {
+        var chalResp = await apiPost({ action: 'generateAdminLoginChallenge' });
+        if (chalResp.error) { toast(chalResp.error, 'error'); return; }
+
+        var assertion = await navigator.credentials.get({ publicKey: {
+            challenge: bufferFromB64url(chalResp.challenge),
+            rpId: chalResp.rpId,
+            allowCredentials: [{ id: bufferFromB64url(credId), type: 'public-key', transports: ['internal'] }],
+            userVerification: 'required',
+            timeout: 60000
+        }});
+
+        var verifyResp = await apiPost({
+            action: 'verifyAdminAssertion',
+            credentialId: credId,
+            authenticatorDataB64: b64urlFromBuffer(assertion.response.authenticatorData),
+            clientDataJSONB64: b64urlFromBuffer(assertion.response.clientDataJSON),
+            signatureB64: b64urlFromBuffer(assertion.response.signature)
+        });
+
+        if (verifyResp.error) { toast(verifyResp.error, 'error'); return; }
+
+        state.isAdmin = true;
+        const settings = await api({action:'getSettings'});
+        state.adminPhone = settings.adminPhone || '';
+        state.user = {name: 'المدير', id: 'admin'};
+        if (state.adminPhone) {
+            const memberData = await api({action:'loginMember', phone: state.adminPhone});
+            if (!memberData.error) state.adminMember = memberData;
+        }
+        enterApp(true);
+        toast('مرحباً بك يا مدير 👑', 'success');
+    } catch(e) {
+        explainWebAuthnError(e);
+    }
 }
 
 // ============================================
@@ -1772,6 +2036,7 @@ async function registerMember() {
   state.user = res;
   enterApp(false);
   toast('مرحباً ' + name + '! تم تسجيلك بنجاح', 'success');
+  offerBiometricSetup();
 }
 
 async function loginMember() {
@@ -1784,6 +2049,7 @@ async function loginMember() {
   state.user = res;
   enterApp(false);
   toast('مرحباً ' + res.name, 'success');
+  offerBiometricSetup();
 }
 
 async function adminLogin() {
@@ -1794,6 +2060,7 @@ async function adminLogin() {
   if (res.error) return toast(res.error, 'error');
   
   state.isAdmin = true;
+  lastVerifiedAdminCode = code; // في الذاكرة فقط لهذه الجلسة، لا يُحفظ في أي تخزين دائم
   // جلب بيانات المدير كعضو من الإعدادات
   const settings = await api({action:'getSettings'});
   state.adminPhone = settings.adminPhone || '';
@@ -1809,6 +2076,7 @@ async function adminLogin() {
   
   enterApp(true);
   toast('مرحباً بك يا مدير 👑', 'success');
+  offerAdminBiometricSetup();
 }
 
 function enterApp(isAdmin) {
@@ -1921,9 +2189,11 @@ function addNavBtn(container, page, label) {
 function logout() {
   try { sessionStorage.removeItem('session'); } catch(e) {}
   state = {user:null,isAdmin:false,adminPhone:'',adminMember:null,viewingAssocId:null,viewingAssocData:null,backPage:null,allAssocs:[],allMembers:[],allSubs:[],defaultDuration:12,adminCode:''};
+  lastVerifiedAdminCode = null;
   document.getElementById('page-login').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-phone') && (document.getElementById('login-phone').value = '');
+  checkBiometricAvailable();
 }
 
 // ============================================
@@ -2734,39 +3004,20 @@ function renderMonthsGrid(months, assoc) {
       </div>
 
       <!-- إجمالي التحصيل (ثابت) -->
-      <div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:10px">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:700;margin-bottom:8px">💰 التحصيل الشهري</div>
-        
-        <!-- الإجمالي -->
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-          <span style="font-size:12px;color:var(--text-2);font-weight:600">الإجمالي:</span>
-          <span style="font-size:18px;font-weight:900;color:var(--primary)">${Number(fixedRiyal).toLocaleString('ar')} ﷼</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px">
+        <div style="background:var(--bg);border-radius:9px;padding:9px 10px">
+          <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">💰 التحصيل الشهري الثابت</div>
+          <div style="font-size:14px;font-weight:800;color:var(--primary)">${fixedShares} سهم</div>
+          <div style="font-size:11px;color:var(--text-muted)">${Number(fixedRiyal).toLocaleString('ar')} ﷼</div>
         </div>
-        
-        <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);display:flex;justify-content:space-between;align-items:center">
-          <span>${fixedShares} سهم × ${Number(sv).toLocaleString('ar')} ﷼</span>
-          <span class="badge ${collDone?'badge-success':'badge-warning'}" style="font-size:10px">${collDone?'✅ مكتمل':'⏳ جاري'}</span>
-        </div>
-        
-        ${!collDone ? '<div style="font-size:10px;color:var(--text-3);margin-top:6px;text-align:center">للتفاصيل: اضغط زر "💰 التحصيل"</div>' : ''}
-      </div>
-
-      <!-- التسليم -->
-      <div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:10px">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:700;margin-bottom:8px">📤 التسليم</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-          <span style="font-size:11px;color:var(--text-2)">الموجود:</span>
-          <span style="font-size:14px;font-weight:800;color:var(--success)">${Number(availRiyal).toLocaleString('ar')} ﷼</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:10px;color:var(--text-3)">مُخصَّص:</span>
-          <span style="font-size:12px;font-weight:700;color:var(--text-2)">${Number(usedRiyal).toLocaleString('ar')} ﷼</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline">
-          <span style="font-size:10px;color:var(--text-3)">متبقي:</span>
-          <span style="font-size:12px;font-weight:700;color:${remainRiyal>0?'var(--success)':'var(--danger)'}">
-            ${Number(remainRiyal).toLocaleString('ar')} ﷼
-          </span>
+        <div style="background:var(--bg);border-radius:9px;padding:9px 10px">
+          <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-bottom:3px">📤 الموجود للتسليم</div>
+          <div style="font-size:14px;font-weight:800;color:${remainRiyal>0?'var(--success)':'var(--danger)'}">
+            ${Number(availRiyal).toLocaleString('ar')} ﷼
+          </div>
+          <div style="font-size:11px;color:var(--text-muted)">
+            مُخصَّص: ${Number(usedRiyal).toLocaleString('ar')} ﷼ (${usedShares_} سهم) — متبقي: ${Number(remainRiyal).toLocaleString('ar')} ﷼
+          </div>
         </div>
       </div>
 
@@ -2886,24 +3137,12 @@ function renderCollectionTable(rows, assocId, monthNum, shareValue) {
       </div>
     </div>
 
-    <!-- بطاقة التحصيل - تحديث ما تم والمتبقي -->
+    <!-- بطاقة المتبقي - تنقص عند التحصيل -->
     <div class="counter-card" id="coll-counter-card">
-      <div style="flex:1">
-        <div class="counter-card-label" style="font-size:12px;font-weight:700;margin-bottom:10px">💰 تحصيل الشهر</div>
-        
-        <!-- ما تم تحصيله -->
-        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px;background:rgba(16,185,129,0.1);padding:8px 10px;border-radius:10px;border:1.5px solid rgba(16,185,129,0.3)">
-          <div style="font-size:12px;color:#047857;font-weight:700;min-width:85px">✅ تم تحصيله:</div>
-          <div style="font-size:20px;font-weight:900;color:#047857" id="coll-collected-val">0 ريال</div>
-        </div>
-        
-        <!-- المتبقي -->
-        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;background:rgba(59,91,219,0.08);padding:8px 10px;border-radius:10px;border:1.5px solid rgba(59,91,219,0.25)">
-          <div style="font-size:12px;color:#1e40af;font-weight:700;min-width:85px">⏳ المتبقي:</div>
-          <div style="font-size:20px;font-weight:900;color:#1e40af" id="coll-remaining-val">${Number(totalMonthValue).toLocaleString('ar')} ريال</div>
-        </div>
-        
-        <div class="counter-card-sub" id="coll-remaining-sub" style="margin-top:8px;font-size:12px">${rows.length} عضو لم يُحصّل بعد</div>
+      <div>
+        <div class="counter-card-label">💸 المبالغ المتبقية للتحصيل</div>
+        <div class="counter-card-val" id="coll-remaining-val">${Number(totalMonthValue).toLocaleString('ar')} ريال</div>
+        <div class="counter-card-sub" id="coll-remaining-sub">${rows.length} عضو لم يُحصّل بعد</div>
       </div>
       <div class="counter-card-right">
         <div class="ring">
@@ -2992,27 +3231,12 @@ function updateCollectionCounters(totalRows, totalMonthValue) {
   if (el('coll-progress-bar')) el('coll-progress-bar').style.width = pct + '%';
   if (el('coll-progress-pct')) el('coll-progress-pct').textContent = pct + '%';
   
-  // تحديث العداد مع تأثير حركي
-  const collectedEl = el('coll-collected-val');
+  // تحديث العداد المتناقص مع تأثير حركي
   const valEl = el('coll-remaining-val');
   const subEl = el('coll-remaining-sub');
   const ring  = el('coll-ring');
   const ringPct = el('coll-ring-pct');
   
-  // تحديث ما تم تحصيله
-  if (collectedEl) {
-    collectedEl.style.transform = 'scale(1.08)';
-    collectedEl.textContent = Number(doneValue).toLocaleString('ar') + ' ريال';
-    setTimeout(() => collectedEl.style.transform = 'scale(1)', 300);
-    // تغيير لون الحاوية حسب الحالة
-    const collectedContainer = collectedEl.parentElement;
-    if (collectedContainer && doneValue > 0) {
-      collectedContainer.style.background = 'rgba(16,185,129,0.15)';
-      collectedContainer.style.borderColor = 'rgba(16,185,129,0.4)';
-    }
-  }
-  
-  // تحديث المتبقي
   if (valEl) {
     valEl.style.transform = 'scale(1.08)';
     valEl.textContent = Number(remainingVal).toLocaleString('ar') + ' ريال';
@@ -3915,9 +4139,9 @@ if (API_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
 (function restoreSession() {
   try {
     const saved = sessionStorage.getItem('session');
-    if (!saved) return;
+    if (!saved) { checkBiometricAvailable(); return; }
     const s = JSON.parse(saved);
-    if (!s || !s.user) return;
+    if (!s || !s.user) { checkBiometricAvailable(); return; }
     state.user        = s.user;
     state.isAdmin     = s.isAdmin || false;
     state.adminPhone  = s.adminPhone || '';
@@ -3937,6 +4161,7 @@ if (API_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
     }
   } catch(e) {
     sessionStorage.removeItem('session');
+    checkBiometricAvailable();
   }
 })();
 
@@ -3964,5 +4189,21 @@ document.addEventListener('input', function(e) {
 });
 
 </script>
+    <div id="biometricBanner" style="display:none;position:fixed;bottom:1rem;left:1rem;right:1rem;z-index:1600;background:linear-gradient(135deg,var(--ink-1),var(--ink-2));border:1px solid rgba(116,143,252,0.5);border-radius:var(--r-lg);padding:0.85rem 1rem;align-items:center;gap:0.75rem;flex-wrap:wrap;box-shadow:0 6px 30px rgba(0,0,0,0.6);backdrop-filter:blur(12px);">
+        <span style="font-size:1.5rem;">👆</span>
+        <div style="flex:1;min-width:150px;"><div style="font-weight:600;font-size:0.9rem;color:#fff;">تفعيل تسجيل الدخول بالبصمة</div><div style="font-size:0.75rem;color:var(--text-muted);">ادخل بسرعة في المرات القادمة بدون كتابة رقمك</div></div>
+        <button onclick="setupBiometric()" style="padding:0.5rem 1rem;background:var(--indigo);border:none;border-radius:var(--r-lg);color:#fff;font-weight:600;cursor:pointer;font-size:0.85rem;white-space:nowrap;">تفعيل الآن</button>
+        <button onclick="dismissBiometricBanner()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.4rem;padding:0.2rem 0.5rem;line-height:1;">×</button>
+    </div>
+
+    <div id="adminBiometricBanner" style="display:none;position:fixed;bottom:6rem;left:1rem;right:1rem;z-index:1600;background:linear-gradient(135deg,var(--ink-1),var(--ink-2));border:1px solid rgba(240,180,41,0.5);border-radius:var(--r-lg);padding:0.85rem 1rem;align-items:center;gap:0.75rem;flex-wrap:wrap;box-shadow:0 6px 30px rgba(0,0,0,0.6);backdrop-filter:blur(12px);">
+        <span style="font-size:1.5rem;">🔐</span>
+        <div style="flex:1;min-width:150px;"><div style="font-weight:600;font-size:0.9rem;color:#fff;">تفعيل بصمة المدير</div><div style="font-size:0.75rem;color:var(--text-muted);">دخول للوحة التحكم بالبصمة بدون كتابة الرمز كل مرة</div></div>
+        <button onclick="setupAdminBiometric()" style="padding:0.5rem 1rem;background:var(--gold-d);border:none;border-radius:var(--r-lg);color:#fff;font-weight:600;cursor:pointer;font-size:0.85rem;white-space:nowrap;">تفعيل الآن</button>
+        <button onclick="dismissAdminBiometricBanner()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.4rem;padding:0.2rem 0.5rem;line-height:1;">×</button>
+    </div>
+    <!-- ملاحظة: bottom:6rem على بانر المدير مقصود (لا 1rem) -- لتجنب تراكب مع
+         بانر العضو لو ظهرا بنفس الوقت (عضو يملك صلاحية مدير بنفس الجلسة). -->
+
 </body>
 </html>
