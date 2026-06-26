@@ -1314,13 +1314,27 @@ body.dark select.form-control {
         <button class="btn-login member-btn" onclick="loginMember()">
           🚀 دخول
         </button>
-        <div id="biometricSection" style="display:none;width:100%;text-align:center;margin-top:14px;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;color:var(--text-muted);font-size:12px;">
+        <div id="biometricSection" style="display:none;width:100%;text-align:center;margin-top:18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--text-muted);font-size:12px;">
             <div style="flex:1;height:1px;background:var(--glass-border)"></div>أو<div style="flex:1;height:1px;background:var(--glass-border)"></div>
           </div>
-          <button type="button" onclick="loginWithBiometric()" style="width:100%;padding:12px;background:rgba(59,91,219,0.12);border:1px solid rgba(116,143,252,0.35);border-radius:var(--r-lg);color:#93c5fd;font-weight:600;cursor:pointer;font-size:14px;">
-            👆 دخول بالبصمة
+          <button type="button" id="fpBtnMember" onclick="loginWithBiometric()" aria-label="دخول بالبصمة" style="position:relative;width:84px;height:84px;border:none;border-radius:50%;cursor:pointer;background:conic-gradient(from 180deg,#3b5bdb,#748ffc,#3b5bdb);box-shadow:0 0 18px rgba(59,91,219,0.45);padding:0;margin:0 auto;display:block;transition:transform 0.12s;">
+            <span style="position:absolute;inset:9px;border-radius:50%;background:var(--ink-2);box-shadow:5px 5px 12px rgba(0,0,0,0.5),-4px -4px 10px rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;">
+              <svg width="42" height="42" viewBox="0 0 100 100" fill="none">
+                <path d="M50 88 C30 88 16 74 16 54" stroke="#5b7cf0" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+                <path d="M50 80 C34 80 22 68 22 52" stroke="#6f8af5" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+                <path d="M50 72 C38 72 28 62 28 50" stroke="#839af7" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+                <path d="M50 64 C42 64 34 56 34 48" stroke="#97aaf9" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+                <path d="M50 56 C46 56 40 50 40 46" stroke="#abbafb" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+                <path d="M50 18 C68 18 82 32 82 50 C82 58 79 65 75 70" stroke="#5b7cf0" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+                <path d="M50 26 C62 26 72 36 72 48 C72 54 70 59 67 63" stroke="#6f8af5" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+                <path d="M50 34 C58 34 64 40 64 47 C64 51 62 55 60 57" stroke="#839af7" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+                <path d="M50 42 C54 42 57 45 57 48" stroke="#abbafb" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+                <circle cx="50" cy="50" r="2.4" fill="#cdd8ff"/>
+              </svg>
+            </span>
           </button>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:10px;">دخول بالبصمة</div>
         </div>
       </div>
 
@@ -1342,13 +1356,27 @@ body.dark select.form-control {
         <button class="btn-login admin-btn" onclick="adminLogin()">
           👑 دخول لوحة التحكم
         </button>
-        <div id="adminBiometricSection" style="display:none;width:100%;text-align:center;margin-top:14px;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;color:var(--text-muted);font-size:12px;">
+        <div id="adminBiometricSection" style="display:none;width:100%;text-align:center;margin-top:18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--text-muted);font-size:12px;">
             <div style="flex:1;height:1px;background:var(--glass-border)"></div>أو<div style="flex:1;height:1px;background:var(--glass-border)"></div>
           </div>
-          <button type="button" onclick="loginAdminWithBiometric()" style="width:100%;padding:12px;background:rgba(240,180,41,0.12);border:1px solid rgba(240,180,41,0.35);border-radius:var(--r-lg);color:var(--gold-l);font-weight:600;cursor:pointer;font-size:14px;">
-            👆 دخول بالبصمة
+          <button type="button" id="fpBtnAdmin" onclick="loginAdminWithBiometric()" aria-label="دخول بالبصمة" style="position:relative;width:84px;height:84px;border:none;border-radius:50%;cursor:pointer;background:conic-gradient(from 180deg,#c07c0a,#ffe08a,#c07c0a);box-shadow:0 0 18px rgba(240,180,41,0.45);padding:0;margin:0 auto;display:block;transition:transform 0.12s;">
+            <span style="position:absolute;inset:9px;border-radius:50%;background:var(--ink-2);box-shadow:5px 5px 12px rgba(0,0,0,0.5),-4px -4px 10px rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;">
+              <svg width="42" height="42" viewBox="0 0 100 100" fill="none">
+                <path d="M50 88 C30 88 16 74 16 54" stroke="#c07c0a" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+                <path d="M50 80 C34 80 22 68 22 52" stroke="#d6920f" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+                <path d="M50 72 C38 72 28 62 28 50" stroke="#eaa820" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+                <path d="M50 64 C42 64 34 56 34 48" stroke="#f0b429" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+                <path d="M50 56 C46 56 40 50 40 46" stroke="#ffe08a" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+                <path d="M50 18 C68 18 82 32 82 50 C82 58 79 65 75 70" stroke="#c07c0a" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+                <path d="M50 26 C62 26 72 36 72 48 C72 54 70 59 67 63" stroke="#d6920f" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+                <path d="M50 34 C58 34 64 40 64 47 C64 51 62 55 60 57" stroke="#eaa820" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+                <path d="M50 42 C54 42 57 45 57 48" stroke="#ffe08a" stroke-width="4" stroke-linecap="round" opacity="0.95"/>
+                <circle cx="50" cy="50" r="2.4" fill="#ffe08a"/>
+              </svg>
+            </span>
           </button>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:10px;">دخول بالبصمة</div>
         </div>
       </div>
 
@@ -1654,7 +1682,7 @@ function fmtDate(s) {
   } catch(e) { return s; }
 }
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbyETn1lpf6XWJzduCwgkqBn5sN8CZrhqMywX1Zpbxjfj7ZmcEdXe9WhkrxhOj4vxtwC/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyTt6QFu4PiFTfZC3t_qUNEBXcG8rMjQUxdoKBuw9xxkr9bIL1hCX_fR0XhcqU6XuaU/exec';
 
 // State
 let state = {
@@ -1772,6 +1800,18 @@ function checkBiometricAvailable() {
     var adminSec = document.getElementById('adminBiometricSection');
     if (adminSec) adminSec.style.display = (window.PublicKeyCredential && hasAdminCred) ? 'block' : 'none';
 }
+
+function wireFingerprintButtonPress_(btn) {
+    if (!btn || btn.dataset.pressWired) return;
+    btn.dataset.pressWired = '1';
+    btn.addEventListener('mousedown', function() { btn.style.transform = 'scale(0.92)'; });
+    btn.addEventListener('mouseup', function() { btn.style.transform = 'scale(1)'; });
+    btn.addEventListener('mouseleave', function() { btn.style.transform = 'scale(1)'; });
+    btn.addEventListener('touchstart', function() { btn.style.transform = 'scale(0.92)'; }, { passive: true });
+    btn.addEventListener('touchend', function() { btn.style.transform = 'scale(1)'; });
+}
+wireFingerprintButtonPress_(document.getElementById('fpBtnMember'));
+wireFingerprintButtonPress_(document.getElementById('fpBtnAdmin'));
 
 function dismissBiometricBanner() {
     var b = document.getElementById('biometricBanner');
